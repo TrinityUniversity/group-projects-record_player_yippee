@@ -18,10 +18,10 @@ class Application @Inject()(cc: ControllerComponents) extends AbstractController
 
   def addSong() = Action(parse.multipartFormData) { implicit request =>
     request.body.file("file").map{ fileTemp =>
+      val name = request.body.dataParts.get("name").flatMap(_.headOption).getOrElse("Unknown").replaceAll(" ","").toLowerCase()
       val filename = fileTemp.filename
-      val contentType = fileTemp.contentType
-      val file = new java.io.File(s"public/uploads/$filename")
-      fileTemp.ref.moveTo(file)
+      val file = new java.io.File(s"./server/public/uploads/$name.mp3")
+      fileTemp.ref.moveTo(file,false)
       Ok(Json.toJson(true))
     }.getOrElse(Ok(Json.toJson(false)))
   }
