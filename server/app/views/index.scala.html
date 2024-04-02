@@ -1,12 +1,11 @@
-@(message: String)
+@()(implicit request: RequestHeader)
 
-@main("Play with Scala.js") {
+@main("Test Page"){
+    <input id="file-input" type="file" accept=".mp3">
+    <input type="text" id="song-name" placeholder="Song Name">
+    <button onclick="addSong()" id="song-button">Add Song!</button>
 
-  <h2>Play and Scala.js share a same message</h2>
-  <ul>
-    <li>Play shouts out: <em>@message</em></li>
-    <li>Scala.js shouts out: <em id="scalajsShoutOut"></em></li>
-  </ul>
-
-  <div id="root"></div>
+    <input type="hidden" id="csrf-token" value="@helper.CSRF.getToken.value">
+    <input type="hidden" id="song-route" value="@routes.Application.addSong">
+    <script src="@routes.Assets.versioned("javascript/fileupload.js")"></script>
 }
