@@ -4,8 +4,10 @@
     <input id="file-input" type="file" accept=".mp3">
     <input type="text" id="song-name" placeholder="Song Name">
     <button onclick="addSong()" id="song-button">Add Song!</button>
+    <button onclick="getSong()" value="song" id="get-song-button">Get Song!</button>
 
     <input type="hidden" id="csrf-token" value="@helper.CSRF.getToken.value">
-    <input type="hidden" id="song-route" value="@routes.Application.addSong">
+    <input type="hidden" id="song-route" value="@routes.Home.addSong">
+    <input type="hidden" id="get-song-route" value="@routes.Home.getSong("")">
     <script src="@routes.Assets.versioned("javascript/fileupload.js")"></script>
 }

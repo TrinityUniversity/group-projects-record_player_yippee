@@ -3,10 +3,10 @@
 # ~~~~
 
 # Home page
-GET        /                            controllers.Application.test
+GET        /                            controllers.Home.test
 + nocsrf
-POST       /addSong                     controllers.Application.addSong
-
+POST       /addSong                     controllers.Home.addSong
+GET        /getSong/:title               controllers.Home.getSong(title: String)
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)
