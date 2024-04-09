@@ -2,10 +2,15 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+# Login page
+GET        /login                       controllers.Login.login()
+POST       /validate                    controllers.Login.validateLogin()
+POST       /signUp                      controllers.Login.createUser()
+
 # Home page
-GET        /                            controllers.Home.test
-+ nocsrf
-POST       /addSong                     controllers.Home.addSong
+GET        /                            controllers.Home.home()
+GET        /songs                       controllers.Home.getSongs()
+POST       /addSong                     controllers.Home.addSong()
 GET        /getSong/:title               controllers.Home.getSong(title: String)
 
 # Prefix must match `play.assets.urlPrefix`
