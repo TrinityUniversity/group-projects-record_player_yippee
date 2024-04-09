@@ -105,7 +105,7 @@ class LoginPage extends React.Component {
         this.state = {signUp: false}
     }
     render(){
-        return ce('div', null,
+        return ce('div', {className: 'page'},
             ce(Header,null,
                 this.state.signUp?
                 ce('p',{onClick: () => this.setState({signUp: false})},"Sign In")

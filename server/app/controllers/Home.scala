@@ -29,11 +29,12 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
   }
 
   def addSong() = Action(parse.multipartFormData).async { implicit request =>
+    withSessionUserId{ crId => 
       request.body.file("file").map{ fileTemp =>
-        val name = request.body.dataParts.get("name").flatMap(_.headOption).getOrElse("Unknown").replaceAll(" ","").toLowerCase()
-        val path = s"./server/public/uploads/$name.mp3"
+        val name = request.body.dataParts.get("name").flatMap(_.headOption).getOrElse("Unknown")
+        val fileName = name.replaceAll(" ","").toLowerCase()
+        val path = s"./server/public/uploads/${fileName}_${crId}.mp3"
         val file = new java.io.File(path)
-        withSessionUserId{ crId => 
           homeModel.addSong(name,None,path,crId.toInt).map{added =>
             if(added){
               fileTemp.ref.moveTo(file,false)
@@ -42,8 +43,8 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
               Ok(Json.toJson(false))
             }
           }
-        }
       }.getOrElse(Future.successful(Ok(Json.toJson(false))))
+    }
   }
 
   def getSong(path :String) = Action { implicit request =>

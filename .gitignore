@@ -36,3 +36,5 @@ shared/.jvm
 .cache
 .target
 bin/
+
+*.mp3

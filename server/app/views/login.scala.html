@@ -3,6 +3,7 @@
 @main("Spinify Login"){
     <input type="hidden" id="login-route" value="@routes.Login.validateLogin()">
     <input type="hidden" id="sign-up-route" value="@routes.Login.createUser()">
+    <input type="hidden" id="csrf-token" value="@helper.CSRF.getToken.value">
     <div id="root"></div>
     <!-- <script src="@routes.Assets.versioned("javascript/fileupload.js")"></script> -->
     <script src="@routes.Assets.versioned("javascript/login.js")"></script>

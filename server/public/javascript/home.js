@@ -1,4 +1,5 @@
 const recordsRoute = document.getElementById("get-songs-route").value
+const addSongRoute = document.getElementById('add-song-route').value
 const csrfToken = document.getElementById('csrf-token').value
 
 const ce = React.createElement
@@ -25,7 +26,12 @@ class SideBar extends React.Component {
 class RecordsDisplay extends React.Component {
     constructor(props){
         super(props),
-        this.state={records: []}
+        this.state={
+            records: [],
+            adding:false,
+            file: null,
+            name: ""
+        }
     }
 
     componentDidMount(){
@@ -34,31 +40,50 @@ class RecordsDisplay extends React.Component {
 
     render(){
         return ce('div',null,
-        ce("p",{onClick: () => this.addSong()},"+"),
+        !this.state.adding?
+        ce("p",{onClick: () => this.setState({adding:true})},"+")
+        :
+        ce('div',null,
+            ce('label',null,'Mp3 File:'),
+            ce('br'),
+            ce("input",{type:'file', accept: '.mp3', onChange: (e) => this.fileChangeHandler(e)},null),
+            ce('br'),
+            ce('label',null,'Name:'),
+            ce('br'),
+            ce('input',{type:'text',value: this.state.name, onChange: (e) => this.nameChangeHandler(e)},null),
+            ce('br'),
+            ce('button',{onClick: () => {this.addSong();this.setState({adding: false})}},'Add Song!')
+        ),
         ce('div',null,
             this.state.records.map((record,index) => ce("p",{id:record.id, key:index},record.name))
         )
         )
     }
 
+    nameChangeHandler = (e) => {
+        this.setState({name: e.target.value})
+    }
+
+    fileChangeHandler = (e) => {
+        this.setState({file: e.target.files[0]})
+    }
+
     loadRecords() {
-        fetch(recordsRoute).then(res => res.json()).then(records => {console.log(records); this.setState({records})})
+        fetch(recordsRoute).then(res => res.json()).then(records => {this.setState({records})})
     }
 
     addSong() {
-        const file = document.getElementById("file-input").files[0]
-        const name = document.getElementById('song-name').value
         const fd = new FormData()
-        fd.append('file',file)
-        fd.append('name',name)
+        fd.append('file',this.state.file)
+        fd.append('name',this.state.name)
         try{
-            fetch(songRoute, {
+            fetch(addSongRoute, {
                 method: "POST",
-                headers: {'Content-Type': 'multipart/form-data', 'Csrf-Token': csrfToken},
+                headers: {'Csrf-Token': csrfToken},
                 body: fd
             })
             .then(res => res.json())
-            .then(data => console.log(data))
+            .then(data => {if(data){this.loadRecords()}})
         } catch (error){
             console.log('Caught:',error)
         }
@@ -71,7 +96,7 @@ class HomePage extends React.Component {
         this.state = {signUp: false}
     }
     render(){
-        return ce('div', null, 
+        return ce('div', {className: 'page'}, 
             ce(Header,null,
                 ce('button',null,'Profile')
             ),
