@@ -20,25 +20,30 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
 
   implicit val recordDeliverDataWrites : Writes[RecordDeliveryData] = Json.writes[RecordDeliveryData]
 
-  def withSessionUserId(f:String => Future[Result])(implicit request: Request[AnyContent]) = {
-        request.session.get("userId").map(f).getOrElse(Ok(Json.toJson(Seq.empty[String])))
+  def withSessionUserId(f:String => Future[Result])(implicit request: Request[Any]) : Future[Result] = {
+        request.session.get("userId").map(f).getOrElse(Future.successful(Ok(Json.toJson(Seq.empty[String]))))
     }
 
   def home() = Action { implicit request => 
     Ok(views.html.home())
   }
 
-  def addSong() = Action(parse.multipartFormData) { implicit request =>
-    withSessionUserId( cre
+  def addSong() = Action(parse.multipartFormData).async { implicit request =>
       request.body.file("file").map{ fileTemp =>
-      val name = request.body.dataParts.get("name").flatMap(_.headOption).getOrElse("Unknown").replaceAll(" ","").toLowerCase()
-      val path = s"./server/public/uploads/$name.mp3"
-      val file = new java.io.File(path)
-      homeModel.addSong(name,None,path,creatorId)
-      fileTemp.ref.moveTo(file,false)
-      Ok(Json.toJson(true))
-    }.getOrElse(Ok(Json.toJson(false)))
-    )
+        val name = request.body.dataParts.get("name").flatMap(_.headOption).getOrElse("Unknown").replaceAll(" ","").toLowerCase()
+        val path = s"./server/public/uploads/$name.mp3"
+        val file = new java.io.File(path)
+        withSessionUserId{ crId => 
+          homeModel.addSong(name,None,path,crId.toInt).map{added =>
+            if(added){
+              fileTemp.ref.moveTo(file,false)
+              Ok(Json.toJson(true))
+            }else{
+              Ok(Json.toJson(false))
+            }
+          }
+        }
+      }.getOrElse(Future.successful(Ok(Json.toJson(false))))
   }
 
   def getSong(path :String) = Action { implicit request =>
