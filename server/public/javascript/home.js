@@ -32,10 +32,11 @@ class RecordsDisplay extends React.Component {
             file: null,
             name: ""
         }
+        this.myRef = React.createRef()
     }
-
     componentDidMount(){
         this.loadRecords()
+        document.addEventListener("mousedown", this.handleOutsideClick);
     }
 
     render(){
@@ -43,7 +44,7 @@ class RecordsDisplay extends React.Component {
         !this.state.adding?
         ce("p",{onClick: () => this.setState({adding:true})},"+")
         :
-        ce('div',null,
+        ce('form',{ref:this.myRef},
             ce('label',null,'Mp3 File:'),
             ce('br'),
             ce("input",{type:'file', accept: '.mp3', onChange: (e) => this.fileChangeHandler(e)},null),
@@ -60,6 +61,13 @@ class RecordsDisplay extends React.Component {
         )
     }
 
+    handleOutsideClick = (e) => {
+        // @ts-ignore
+        if(this.myRef.current && !this.myRef.current.contains(e.target)){
+            this.setState({adding:false});
+        }
+    }
+
     nameChangeHandler = (e) => {
         this.setState({name: e.target.value})
     }
@@ -73,6 +81,7 @@ class RecordsDisplay extends React.Component {
     }
 
     addSong() {
+        console.log(this.state.file)
         const fd = new FormData()
         fd.append('file',this.state.file)
         fd.append('name',this.state.name)

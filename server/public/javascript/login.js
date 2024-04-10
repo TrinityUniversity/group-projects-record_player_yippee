@@ -20,7 +20,8 @@ class Login extends React.Component {
         this.state = {loginName: "",loginPass: ""}
     }
     render(){
-        return ce('div',null,
+        return (
+        ce('div',null,
             ce('h2',null,'Login'),
             ce('label',null,'Username'),
             ce('br'),
@@ -31,6 +32,7 @@ class Login extends React.Component {
             ce('input',{type: 'password', onChange: (e) => this.passChangeHandler(e),value: this.state.loginPass}),
             ce('br'),
             ce('button',{onClick: (e) => this.login(e)},'Login')
+        )
         )
     }
     nameChangeHandler = (e) => {
@@ -47,7 +49,11 @@ class Login extends React.Component {
             headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
             body: JSON.stringify({username: this.state.loginName, password: this.state.loginPass})
             }
-        ).then(res => res.json()).then(body => console.log(body))
+        ).then(res => res.json()).then(valid => {
+            if(valid){
+                window.location.href = '/'
+            }
+        })
     }
 
 }
@@ -94,7 +100,12 @@ class SignUp extends React.Component {
                 headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
                 body: JSON.stringify({username: this.state.signUpName, password: this.state.signUpPass})
                 }
-            ).then(res => res.json()).then(body => console.log(body))
+            ).then(res => res.json())
+            .then(valid => {
+                    if(valid){
+                        window.location.href = '/'
+                    }
+                })
         }
     }
 }
