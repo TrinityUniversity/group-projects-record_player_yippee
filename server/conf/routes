@@ -11,7 +11,7 @@ POST       /signUp                      controllers.Login.createUser()
 GET        /                            controllers.Home.home()
 GET        /songs                       controllers.Home.getSongs()
 POST       /addSong                     controllers.Home.addSong()
-GET        /getSong/:title               controllers.Home.getSong(title: String)
+POST       /getSong                     controllers.Home.getSong()
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)

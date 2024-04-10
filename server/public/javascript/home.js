@@ -1,6 +1,7 @@
 const recordsRoute = document.getElementById("get-songs-route").value
 const addSongRoute = document.getElementById('add-song-route').value
 const csrfToken = document.getElementById('csrf-token').value
+const getSongRoute = document.getElementById('get-song-route').value
 
 const ce = React.createElement
 
@@ -56,13 +57,12 @@ class RecordsDisplay extends React.Component {
             ce('button',{onClick: () => {this.addSong();this.setState({adding: false})}},'Add Song!')
         ),
         ce('div',null,
-            this.state.records.map((record,index) => ce("p",{id:record.id, key:index},record.name))
+            this.state.records.map((record,index) => ce("p",{id:record.id, key:index, onClick: () => this.getSong(record)},record.name))
         )
         )
     }
 
     handleOutsideClick = (e) => {
-        // @ts-ignore
         if(this.myRef.current && !this.myRef.current.contains(e.target)){
             this.setState({adding:false});
         }
@@ -81,7 +81,6 @@ class RecordsDisplay extends React.Component {
     }
 
     addSong() {
-        console.log(this.state.file)
         const fd = new FormData()
         fd.append('file',this.state.file)
         fd.append('name',this.state.name)
@@ -97,19 +96,50 @@ class RecordsDisplay extends React.Component {
             console.log('Caught:',error)
         }
     }
+
+    getSong = (record) => {
+        fetch(getSongRoute,{
+            method: "POST",
+            headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
+            body: JSON.stringify({path: record.fileLocation})
+        })
+        .then(res => {
+            if(res.status == 200){
+                res.blob().then(blob => {
+                    this.props.recordUpdate({recordUrl:URL.createObjectURL(blob),record})
+                })
+            }
+        })
+        
+    }
+}
+
+class RecordPlayer extends React.Component {
+    constructor(props){
+        super(props),
+        this.state = {}
+    }
+    render() {
+        return (
+            ce('div',null,
+                ce('audio',{src: this.props.recordUrl},null)
+            )
+        )
+    }
 }
 
 class HomePage extends React.Component {
     constructor(props){
         super(props),
-        this.state = {signUp: false}
+        this.state = {signUp: false, recordUrl: "", record:{}}
     }
     render(){
         return ce('div', {className: 'page'}, 
             ce(Header,null,
                 ce('button',null,'Profile')
             ),
-            ce(SideBar,null,ce(RecordsDisplay))
+            ce(SideBar,null,ce(RecordsDisplay,{recordUpdate: updates => this.setState(updates)})),
+            ce(RecordPlayer, {recordUrl: this.state.recordUrl,record: this.state.record})
         )
     }
 }

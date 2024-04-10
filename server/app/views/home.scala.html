@@ -3,7 +3,7 @@
 @main("Test Page"){
     <input type="hidden" id="csrf-token" value="@helper.CSRF.getToken.value">
     <input type="hidden" id="song-route" value="@routes.Home.addSong()">
-    <input type="hidden" id="get-song-route" value="@routes.Home.getSong("")">
+    <input type="hidden" id="get-song-route" value="@routes.Home.getSong()">
     <input type="hidden" id="get-songs-route" value="@routes.Home.getSongs()">
     <input type="hidden" id="add-song-route" value="@routes.Home.addSong()">
     <!-- <input id="file-input" type="file" accept=".mp3">

@@ -20,9 +20,20 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
 
   implicit val recordDeliverDataWrites : Writes[RecordDeliveryData] = Json.writes[RecordDeliveryData]
 
+  implicit val pathDataReads : Reads[PathData] = Json.reads[PathData]
+
   def withSessionUserId(f:String => Future[Result])(implicit request: Request[Any]) : Future[Result] = {
         request.session.get("userId").map(f).getOrElse(Future.successful(Ok(Json.toJson(Seq.empty[String]))))
-    }
+  }
+
+  def withJsonBody[A](f: A => Future[Result])(implicit request:Request[AnyContent], reads: Reads[A]) :Future[Result] = {
+        request.body.asJson.map{ body =>
+            Json.fromJson[A](body) match {
+                case JsSuccess(a,path) => f(a)
+                case e @ JsError(_) => Future.successful(Redirect(routes.Login.login()))
+            }
+        }.getOrElse(Future.successful(Redirect(routes.Login.login())))
+  }
 
   def home() = Action { implicit request => 
     Ok(views.html.home())
@@ -47,13 +58,16 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
     }
   }
 
-  def getSong(path :String) = Action { implicit request =>
-    val file = new java.io.File(path)
-    if(file.exists()){
-      Ok.sendFile(file,inline=true)
-    }else{
-      NotFound(s"$path is an invalid path")
+  def getSong() = Action.async { implicit request =>
+    withJsonBody[PathData]{pd =>
+      val file = new java.io.File(pd.path)
+      if(file.exists()){
+        Future.successful(Ok.sendFile(file,inline=true))
+      }else{
+        Future.successful(NotFound(s"${pd.path} is an invalid path"))
+      }
     }
+    
   }
 
   def getSongs() = Action.async { implicit request => 
