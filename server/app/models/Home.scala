@@ -23,5 +23,4 @@ class HomeModel(db: Database)(implicit ec: ExecutionContext){
     def addSong(name :String,length:Option[Double],fileLocation:String,creatorId:Int) : Future[Boolean] = {
         db.run(Records += RecordsRow(-1,name,length,fileLocation,creatorId)).map(addCount => addCount > 0)
     }
-
 }

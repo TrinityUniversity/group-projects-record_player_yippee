@@ -46,13 +46,13 @@ class RecordsDisplay extends React.Component {
         ce("p",{onClick: () => this.setState({adding:true})},"+")
         :
         ce('div',{ref:this.myRef},
+            ce('label',null,'Title:'),
+            ce('br'),
+            ce('input',{type:'text',value: this.state.name, onChange: (e) => this.nameChangeHandler(e)},null),
+            ce('br'),
             ce('label',null,'Mp3 File:'),
             ce('br'),
             ce("input",{type:'file', accept: '.mp3', onChange: (e) => this.fileChangeHandler(e)},null),
-            ce('br'),
-            ce('label',null,'Name:'),
-            ce('br'),
-            ce('input',{type:'text',value: this.state.name, onChange: (e) => this.nameChangeHandler(e)},null),
             ce('br'),
             ce('button',{onClick: () => {this.addSong();this.setState({adding: false})}},'Add Song!')
         ),
@@ -150,7 +150,7 @@ class HomePage extends React.Component {
     render(){
         return ce('div', {className: 'page'}, 
             ce(Header,null,
-                ce('button',null,'Profile')
+                ce('button',{onClick: () => window.location.href = "/profile"},'Profile')
             ),
             ce(SideBar,null,ce(RecordsDisplay,{recordUpdate: updates => this.setState(updates)})),
             ce(RecordPlayer, {recordUrl: this.state.recordUrl,record: this.state.record})

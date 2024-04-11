@@ -1,0 +1,7 @@
+@()(implicit request: RequestHeader)
+
+@main("Spinify Profile"){
+    <input type="hidden" id="csrf-token" value="@helper.CSRF.getToken.value">
+    <div id="root"></div>
+    <script src="@routes.Assets.versioned("javascript/profile.js")"></script>
+}
