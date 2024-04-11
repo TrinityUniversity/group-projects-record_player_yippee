@@ -1,16 +1,11 @@
 @()(implicit request: RequestHeader)
 
-@main("Test Page"){
+@main("Spinify Home"){
     <input type="hidden" id="csrf-token" value="@helper.CSRF.getToken.value">
     <input type="hidden" id="song-route" value="@routes.Home.addSong()">
     <input type="hidden" id="get-song-route" value="@routes.Home.getSong()">
     <input type="hidden" id="get-songs-route" value="@routes.Home.getSongs()">
     <input type="hidden" id="add-song-route" value="@routes.Home.addSong()">
-    <!-- <input id="file-input" type="file" accept=".mp3">
-    <input type="text" id="song-name" placeholder="Song Name">
-    <button onclick="addSong()" id="song-button">Add Song!</button>
-    <button onclick="getSong()" value="song" id="get-song-button">Get Song!</button> -->
     <div id="root"></div>
-    <!-- <script src="@routes.Assets.versioned("javascript/fileupload.js")"></script> -->
     <script src="@routes.Assets.versioned("javascript/home.js")"></script>
 }

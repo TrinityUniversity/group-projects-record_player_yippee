@@ -35,8 +35,10 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
         }.getOrElse(Future.successful(Redirect(routes.Login.login())))
   }
 
-  def home() = Action { implicit request => 
-    Ok(views.html.home())
+  def home() = Action { implicit request =>
+    request.session.get("userId").map{ _ =>
+      Ok(views.html.home())
+    }.getOrElse(Redirect(routes.Login.login()))
   }
 
   def addSong() = Action(parse.multipartFormData).async { implicit request =>

@@ -35,12 +35,10 @@ class Login @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc
 
     def validateLogin = Action.async { implicit request => 
         withJsonBody[UserData]{ ud =>
-            model.validateUser(ud.username,ud.password).map{ userExists =>
-                if(userExists){
-                    Ok(Json.toJson(true))
-                        .withSession()
-                }else{
-                    Ok(Json.toJson(false))
+            model.validateUser(ud.username,ud.password).map{ user =>
+                user match {
+                    case Some(id) => Ok(Json.toJson(true)).withSession("userId" -> id.toString)
+                    case None => Ok(Json.toJson(false))
                 }
             }
         }
@@ -48,12 +46,10 @@ class Login @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc
 
     def createUser = Action.async { implicit request =>
         withJsonBody[UserData](ud => {
-            model.createUser(ud.username,ud.password).map{userCreated =>
-                if(userCreated){
-                    Ok(Json.toJson(true))
-                        .withSession()
-                } else {
-                    Ok(Json.toJson(false))
+            model.createUser(ud.username,ud.password).map{user =>
+                user match {
+                    case Some(id) => Ok(Json.toJson(true)).withSession("userId" -> id.toString)
+                    case None => Ok(Json.toJson(false))
                 }
             }
         })

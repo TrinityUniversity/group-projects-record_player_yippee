@@ -8,7 +8,6 @@ import slinky.web.ReactDOM
 import slinky.web.html._
 
 object ScalaJSExample {
-
   def main(args: Array[String]): Unit = {
     // // This line demonstrates using Scala.js to modify the DOM.
     // dom.document.getElementById("scalajsShoutOut").textContent = SharedMessages.itWorks
