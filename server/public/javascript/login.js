@@ -119,9 +119,9 @@ class LoginPage extends React.Component {
         return ce('div', {className: 'page'},
             ce(Header,null,
                 this.state.signUp?
-                ce('p',{onClick: () => this.setState({signUp: false})},"Sign In")
+                ce('button',{onClick: () => this.setState({signUp: false})},"Sign In")
                 :
-                ce('p',{onClick: () => this.setState({signUp: true})},"Sign Up")
+                ce('button',{onClick: () => this.setState({signUp: true})},"Sign Up")
             ),
             this.state.signUp?
             ce(SignUp)
