@@ -45,7 +45,7 @@ class RecordsDisplay extends React.Component {
         !this.state.adding?
         ce("p",{onClick: () => this.setState({adding:true})},"+")
         :
-        ce('form',{ref:this.myRef},
+        ce('div',{ref:this.myRef},
             ce('label',null,'Mp3 File:'),
             ce('br'),
             ce("input",{type:'file', accept: '.mp3', onChange: (e) => this.fileChangeHandler(e)},null),
@@ -117,21 +117,35 @@ class RecordsDisplay extends React.Component {
 class RecordPlayer extends React.Component {
     constructor(props){
         super(props),
-        this.state = {}
+        this.state = {playing:false}
     }
     render() {
         return (
             ce('div',null,
-                ce('audio',{src: this.props.recordUrl},null)
+                ce('p',{onClick: () => this.handlePlayPause()},this.state.playing?'Pause!':'Play!'),
+                ce('audio',{id:"record",src: this.props.recordUrl},null)
             )
         )
+    }
+
+    handlePlayPause = () => {
+        const audio = document.getElementById('record')
+        if(audio.src != window.location.href){
+            if(this.state.playing){
+                audio.pause()
+                this.setState({playing:false})
+            }else{
+                audio.play()
+                this.setState({playing:true})
+            }   
+        }
     }
 }
 
 class HomePage extends React.Component {
     constructor(props){
         super(props),
-        this.state = {signUp: false, recordUrl: "", record:{}}
+        this.state = {signUp: false, recordUrl: "/", record:{}}
     }
     render(){
         return ce('div', {className: 'page'}, 
