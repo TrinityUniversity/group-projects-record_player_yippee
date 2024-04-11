@@ -1,0 +1,39 @@
+
+
+/* header, side, body*/
+ 
+header{
+    padding: 20px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: left;
+    color: black;
+    background: #da7635; 
+    width: 100vw;
+
+}
+
+header button {
+    position:absolute;
+    top: 80px;
+    right:60px;
+    background: #e24e1b;
+    border:none;
+    border-radius: 4px;
+    padding: 10px;
+    font-family:serif;
+    font-size: 15px;
+    
+}
+header button:hover {
+    background-color: orange;
+    color: white;
+    cursor: pointer;
+  }
+body{
+    padding: 20px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    text-align: left;
+    color: black;
+    background-color: #f5f2b8;
+    cursor: pointer;
+}
