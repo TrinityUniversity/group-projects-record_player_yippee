@@ -1,14 +1,14 @@
 
 
-/* header, side, body*/
- 
+/* header, aside, body*/
+
 header{
     padding: 20px;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: left;
     color: black;
     background: #da7635; 
-    width: 100vw;
+    width: calc(100% - 40px);
 
 }
 
@@ -30,9 +30,10 @@ header button:hover {
     cursor: pointer;
   
 }
+
 body{
-    padding: 0px;
-    margin: 0px;
+    width: 100%;
+    margin: 0;
     font-family:Georgia, 'Times New Roman', Times, serif;
     text-align: center;
     color: black;

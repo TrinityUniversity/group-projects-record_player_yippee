@@ -27,7 +27,9 @@ class ProfilePage extends React.Component {
             ce(Header,null,
                 ce('button',{onClick: () => window.location.href = '/logout'},'Logout')
             ),
-            ce(SideBar,null,null)
+            ce(SideBar,null,
+                ce('div',null,null)   
+            )
         )
     }
 }
