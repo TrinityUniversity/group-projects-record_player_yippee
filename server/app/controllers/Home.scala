@@ -14,11 +14,10 @@ import scala.concurrent.Future
 
 class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc: ControllerComponents)(implicit ec: ExecutionContext) 
     extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
-  // implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
   
   val homeModel = new HomeModel(db)
 
-  implicit val recordDeliverDataWrites : Writes[RecordDeliveryData] = Json.writes[RecordDeliveryData]
+  implicit val recordDeliveryDataWrites : Writes[RecordDeliveryData] = Json.writes[RecordDeliveryData]
 
   implicit val pathDataReads : Reads[PathData] = Json.reads[PathData]
 

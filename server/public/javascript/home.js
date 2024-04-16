@@ -57,7 +57,10 @@ class RecordsDisplay extends React.Component {
             ce('button',{onClick: () => {this.addSong();this.setState({adding: false})}},'Add Song!')
         ),
         ce('div',null,
-            this.state.records.map((record,index) => ce("p",{id:record.id, key:index, onClick: () => this.getSong(record)},record.name))
+            this.state.records.map((record,index) => ce("div",{id:record.id, key:index, onClick: () => this.getSong(record)},
+            ce('p',null,`${record.name}`),
+            ce('p',null,`${record.creatorName}'s Version`)
+            ))
         )
         )
     }
@@ -106,6 +109,7 @@ class RecordsDisplay extends React.Component {
         .then(res => {
             if(res.status == 200){
                 res.blob().then(blob => {
+                    console.log(record)
                     this.props.recordUpdate({recordUrl:URL.createObjectURL(blob),record})
                 })
             }
@@ -150,6 +154,13 @@ class HomePage extends React.Component {
     render(){
         return ce('div', {className: 'page'}, 
             ce(Header,null,
+                ce('div',null,
+                    ce('h2',null,this.state.record.name),
+                    this.state.record.creatorName?
+                    ce('p',null,`${this.state.record.creatorName}'s Version`)
+                    :
+                    ""
+                ),
                 ce('button',{onClick: () => window.location.href = "/profile"},'Profile')
             ),
             ce(SideBar,null,ce(RecordsDisplay,{recordUpdate: updates => this.setState(updates)})),
