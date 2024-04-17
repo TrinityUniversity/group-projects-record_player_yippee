@@ -41,28 +41,31 @@ class RecordsDisplay extends React.Component {
     }
 
     render(){
-        return ce('div',null,
-        !this.state.adding?
-        ce("p",{onClick: () => this.setState({adding:true})},"+")
-        :
-        ce('div',{ref:this.myRef},
-            ce('label',null,'Title:'),
-            ce('br'),
-            ce('input',{type:'text',value: this.state.name, onChange: (e) => this.nameChangeHandler(e)},null),
-            ce('br'),
-            ce('label',null,'Mp3 File:'),
-            ce('br'),
-            ce("input",{type:'file', accept: '.mp3', onChange: (e) => this.fileChangeHandler(e)},null),
-            ce('br'),
-            ce('button',{onClick: () => {this.addSong();this.setState({adding: false})}},'Add Song!')
-        ),
+        return( 
         ce('div',null,
-            this.state.records.map((record,index) => ce("div",{id:record.id, key:index, onClick: () => this.getSong(record)},
-            ce('p',null,`${record.name}`),
-            ce('p',null,`${record.creatorName}'s Version`)
-            ))
-        )
-        )
+            !this.state.adding?
+            ce("p",{onClick: () => this.setState({adding:true})},"+")
+            :
+            ce('div',{ref:this.myRef},
+                ce('label',null,'Title:'),
+                ce('br'),
+                ce('input',{type:'text',value: this.state.name, onChange: (e) => this.nameChangeHandler(e)},null),
+                ce('br'),
+                ce('label',null,'Mp3 File:'),
+                ce('br'),
+                ce("input",{type:'file', accept: '.mp3', onChange: (e) => this.fileChangeHandler(e)},null),
+                ce('br'),
+                ce('button',{onClick: () => {this.addSong();this.setState({adding: false})}},'Add Song!')
+            ),
+            ce('div',null,
+                this.state.records.map((record,index) => 
+                    ce("div",{id:record.id, key:index, onClick: () => this.getSong(record)},
+                        ce('p',null,`${record.name}`),
+                        ce('p',null,`${record.creatorName}'s Version`)
+                    )
+                )
+            )
+        ))
     }
 
     handleOutsideClick = (e) => {

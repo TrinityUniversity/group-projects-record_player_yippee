@@ -9,3 +9,5 @@ case class RecordDeliveryData(id:Int,name:String,length:Option[Double],fileLocat
 case class PathData(path:String)
 
 case class RecordPartialData(id:Int,name:String)
+
+case class UserDeliveryData(username:String,dateJoined:String,songsAdded:Int,songsLiked:Int)
