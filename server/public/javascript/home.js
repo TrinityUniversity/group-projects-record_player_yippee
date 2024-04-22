@@ -2,6 +2,10 @@ const recordsRoute = document.getElementById("get-songs-route").value
 const addSongRoute = document.getElementById('add-song-route').value
 const csrfToken = document.getElementById('csrf-token').value
 const getSongRoute = document.getElementById('get-song-route').value
+const likeRoute = document.getElementById("like-route").value
+const vinylSVG = document.getElementById('vinyl-svg').value
+const starSVG = document.getElementById('star-svg').value
+const filledStarSVG = document.getElementById('filled-star-svg').value
 
 const ce = React.createElement
 
@@ -67,7 +71,7 @@ class RecordsDisplay extends React.Component {
             ),
             ce('div',{className:"records"},
                 this.state.records.map((record,index) => 
-                    ce("div",{id:record.id, className:"record", key:index, onClick: () => this.getSong(record)},
+                    ce("div",{id:record.id, className:"sidebar-record", key:index, onClick: () => this.getSong(record)},
                         ce('p',null,`${record.name} - ${record.artist}`),
                         ce('p',null,`${record.creatorName}'s Version`)
                     )
@@ -141,11 +145,17 @@ class RecordPlayer extends React.Component {
         super(props),
         this.state = {playing:false}
     }
+    componentDidUpdate = (prevProps,prevState,snapshot) =>{
+        if(prevProps.recordUrl != this.props.recordUrl){
+            this.setState({playing:false})
+            document.getElementById('record-image').classList.remove('active')
+        }
+    }
     render() {
         return (
-            ce('div',null,
-                ce('p',{onClick: () => this.handlePlayPause()},this.state.playing?'Pause!':'Play!'),
-                ce('audio',{id:"record",src: this.props.recordUrl},null)
+            ce('div',{className: "record"},
+                ce('img',{id:"record-image",className:"spin-animation",onClick: ()=>this.handlePlayPause(),src:vinylSVG}),
+                ce('audio',{id:"record",src: this.props.recordUrl},null),
             )
         )
     }
@@ -153,6 +163,7 @@ class RecordPlayer extends React.Component {
     handlePlayPause = () => {
         const audio = document.getElementById('record')
         if(audio.src != window.location.href){
+            document.getElementById("record-image").classList.toggle("active")
             if(this.state.playing){
                 audio.pause()
                 this.setState({playing:false})
@@ -185,8 +196,27 @@ class HomePage extends React.Component {
                 ce('button',{onClick: () => window.location.href = "/profile"},'Profile')
             ),
             ce(SideBar,null,ce(RecordsDisplay,{recordUpdate: updates => this.setState(updates)})),
+            this.state.record.name?
             ce(RecordPlayer, {recordUrl: this.state.recordUrl,record: this.state.record})
+            :
+            "",
+            this.state.record.name?
+            ce('img',{className:"like",src:this.state.record.liked?filledStarSVG:starSVG,onClick:() => this.handleLike()})
+            :
+            ""
         )
+    }
+
+    handleLike = () =>{
+        fetch(likeRoute,{
+            method:"POST",
+            headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
+            body: JSON.stringify(this.state.record)
+        }).then(res => res.json()).then(res=> {
+            if(res){
+                this.setState({record:{...this.state.record,liked:!this.state.record.liked}})
+            }
+        })
     }
 }
 

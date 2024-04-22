@@ -19,6 +19,8 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
 
   implicit val recordDeliveryDataWrites : Writes[RecordDeliveryData] = Json.writes[RecordDeliveryData]
 
+  implicit val recordDeliveryDataReads : Reads[RecordDeliveryData] = Json.reads[RecordDeliveryData]
+
   implicit val pathDataReads : Reads[PathData] = Json.reads[PathData]
 
   def withSessionUserId(f:String => Future[Result])(implicit request: Request[Any]) : Future[Result] = {
@@ -73,8 +75,26 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
   }
 
   def getSongs() = Action.async { implicit request => 
-    homeModel.fetchSongs().map{ result =>
-       Ok(Json.toJson(result))
+    withSessionUserId{ud =>
+      homeModel.fetchSongs(ud.toInt).map{ result =>
+        Ok(Json.toJson(result))
+      }
+    }
+  }
+
+  def likeSong() = Action.async{ implicit request =>
+    withSessionUserId{ud =>
+      withJsonBody[RecordDeliveryData]{record=>
+        if(record.liked){
+          homeModel.dislikeSong(ud.toInt,record.id).map{result =>
+            Ok(Json.toJson(result))  
+          }
+        }else{
+          homeModel.likeSong(ud.toInt,record.id).map{result =>
+            Ok(Json.toJson(result))
+        }
+      }
+    }
     }
   }
 }

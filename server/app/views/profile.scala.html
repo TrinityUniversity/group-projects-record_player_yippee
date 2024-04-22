@@ -3,6 +3,7 @@
 @main("Spinify Profile"){
     <input type="hidden" id="csrf-token" value="@helper.CSRF.getToken.value">
     <input type="hidden" id="user-data-route" value="@routes.Profile.getUserData()">
+    <input type="hidden" id="collections-route" value="@routes.Profile.loadCollections()">
     <div id="root"></div>
     <script src="@routes.Assets.versioned("javascript/profile.js")"></script>
 }

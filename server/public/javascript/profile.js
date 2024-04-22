@@ -1,5 +1,6 @@
 const csrfToken = document.getElementById('csrf-token').value
 const userDataRoute = document.getElementById('user-data-route').value
+const collectionsRoute = document.getElementById('collections-route').value
 
 const ce = React.createElement
 
@@ -25,11 +26,12 @@ class SideBar extends React.Component {
 class ProfilePage extends React.Component {
     constructor(props){
         super(props),
-        this.state = {userData: {}}
+        this.state = {userData: {}, collections: []}
     }
 
     componentDidMount = () => {
         this.getUserData()
+        this.loadCollections()
     }
 
     render() {
@@ -42,13 +44,26 @@ class ProfilePage extends React.Component {
                     Object.entries(this.state.userData).map(([k,v],index) => {
                         return ce('p',{key:index},`${k.toUpperCase().replace('_',' ')}: ${v}`)
                     })
-                )   
+                ),
+                ce('div',null,
+                    this.state.collections.map(coll => {
+                        return(ce('div',null,
+                            ce('p',null,coll.name),
+                            ce('p',null,`Number of Items: ${coll.numOfItems}`))
+                        )
+                    }
+                    )
+                )
             )
         )
     }
 
     getUserData = () => {
         fetch(userDataRoute).then(res => res.json()).then(userData => this.setState({userData}))
+    }
+
+    loadCollections = () => {
+        fetch(collectionsRoute).then(res => res.json()).then(res =>this.setState({collections: res}))
     }
 }
 

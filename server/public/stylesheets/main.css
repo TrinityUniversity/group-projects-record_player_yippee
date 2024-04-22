@@ -46,6 +46,7 @@ header button:hover {
 
 body{
     width: 100%;
+    height: 100vh;
     margin: 0;
     font-family: Georgia, 'Times New Roman', Times, serif;
     color: black;
@@ -138,18 +139,18 @@ aside {
     font-family: sans-serif;
 }
 
-.record:hover{
+.sidebar-record:hover{
     cursor: pointer;
 }
 
-.record::before {
+.sidebar-record::before {
     display: inline-block;
     content: "";
     border-top: .3rem solid black;
     width: 100%;
 }
 
-.record:first-of-type::before{
+.sidebar-record:first-of-type::before{
     visibility: hidden;
 }
 
@@ -159,4 +160,53 @@ aside {
     top: 10px;
     left: calc(25%);
     text-align: center;
+}
+
+.record {
+    position: absolute;
+    top: 125.37px;
+    right: 0;
+    height: calc(100vh - 125.37px);
+    width: 75%;
+    display: grid;
+    justify-content: center;
+}
+
+.record img{
+    height: 30%;
+    position: relative;
+    top: 20px;
+}
+
+.record img:hover{
+    cursor: pointer;
+}
+
+.spin-animation{
+    animation: spin 5000ms infinite linear;
+    animation-play-state: paused;
+}
+
+.active {
+    animation-play-state: running !important;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
+.like {
+    position: absolute;
+    top: 135.37px;
+    right: 10px;
+    height: 10%;
+}
+
+.like:hover{
+    cursor: pointer;
 }

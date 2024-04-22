@@ -12,11 +12,13 @@ GET        /                            controllers.Home.home()
 GET        /songs                       controllers.Home.getSongs()
 POST       /addSong                     controllers.Home.addSong()
 POST       /getSong                     controllers.Home.getSong()
+POST       /likeSong                    controllers.Home.likeSong()
 
 # Profile page
 GET        /profile                     controllers.Profile.prof()
 GET        /logout                      controllers.Profile.logout()
 GET        /user                        controllers.Profile.getUserData()
+GET        /collections                 controllers.Profile.loadCollections()
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)

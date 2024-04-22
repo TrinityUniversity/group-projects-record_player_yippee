@@ -19,6 +19,8 @@ class Profile @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, 
 
     implicit val UserDeliveryDataWrites : Writes[UserDeliveryData] = Json.writes[UserDeliveryData]
 
+    implicit val CollectionDeliveryDataWrites : Writes[CollectionDeliveryData] = Json.writes[CollectionDeliveryData]
+
     def withSessionUserId(f:String => Future[Result])(implicit request: Request[Any]) : Future[Result] = {
         request.session.get("userId").map(f).getOrElse(Future.successful(Ok(Json.toJson(Seq.empty[String]))))
     }
@@ -39,5 +41,13 @@ class Profile @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, 
                 Ok(Json.toJson(result))
             }
         }
+    }
+
+    def loadCollections() = Action.async { implicit request =>
+        withSessionUserId{id =>
+            model.loadCollections(id.toInt).map{result =>
+                Ok(Json.toJson(result))
+            }
+        }   
     }
 }
