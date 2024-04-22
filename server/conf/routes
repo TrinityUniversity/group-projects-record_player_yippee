@@ -16,6 +16,7 @@ POST       /getSong                     controllers.Home.getSong()
 # Profile page
 GET        /profile                     controllers.Profile.prof()
 GET        /logout                      controllers.Profile.logout()
+GET        /user                        controllers.Profile.getUserData()
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)

@@ -83,18 +83,19 @@ trait Tables {
    *  @param name Database column name SqlType(varchar)
    *  @param length Database column length SqlType(float8), Default(None)
    *  @param fileLocation Database column file_location SqlType(varchar)
-   *  @param creatorId Database column creator_id SqlType(int4) */
-  case class RecordsRow(recordId: Int, name: String, length: Option[Double] = None, fileLocation: String, creatorId: Int)
+   *  @param creatorId Database column creator_id SqlType(int4) 
+   *  @param artist Database column artist SqlType(varchar)*/
+  case class RecordsRow(recordId: Int, name: String, length: Option[Double] = None, fileLocation: String, creatorId: Int, artist: String)
   /** GetResult implicit for fetching RecordsRow objects using plain SQL queries */
   implicit def GetResultRecordsRow(implicit e0: GR[Int], e1: GR[String], e2: GR[Option[Double]]): GR[RecordsRow] = GR{
     prs => import prs._
-    RecordsRow.tupled((<<[Int], <<[String], <<?[Double], <<[String], <<[Int]))
+    RecordsRow.tupled((<<[Int], <<[String], <<?[Double], <<[String], <<[Int], <<[String]))
   }
   /** Table description of table records. Objects of this class serve as prototypes for rows in queries. */
   class Records(_tableTag: Tag) extends profile.api.Table[RecordsRow](_tableTag, "records") {
-    def * = (recordId, name, length, fileLocation, creatorId).<>(RecordsRow.tupled, RecordsRow.unapply)
+    def * = (recordId, name, length, fileLocation, creatorId, artist).<>(RecordsRow.tupled, RecordsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = ((Rep.Some(recordId), Rep.Some(name), length, Rep.Some(fileLocation), Rep.Some(creatorId))).shaped.<>({r=>import r._; _1.map(_=> RecordsRow.tupled((_1.get, _2.get, _3, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = ((Rep.Some(recordId), Rep.Some(name), length, Rep.Some(fileLocation), Rep.Some(creatorId), Rep.Some(artist))).shaped.<>({r=>import r._; _1.map(_=> RecordsRow.tupled((_1.get, _2.get, _3, _4.get, _5.get, _6.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column record_id SqlType(serial), AutoInc, PrimaryKey */
     val recordId: Rep[Int] = column[Int]("record_id", O.AutoInc, O.PrimaryKey)
@@ -106,6 +107,8 @@ trait Tables {
     val fileLocation: Rep[String] = column[String]("file_location")
     /** Database column creator_id SqlType(int4) */
     val creatorId: Rep[Int] = column[Int]("creator_id")
+    /** Database column artist SqlType(varchar) */
+    val artist: Rep[String] = column[String]("artist")
 
     /** Foreign key referencing Users (database name records_creator_id_fkey) */
     lazy val usersFk = foreignKey("records_creator_id_fkey", creatorId, Users)(r => r.id, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)

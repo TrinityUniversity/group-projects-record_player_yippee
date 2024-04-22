@@ -33,7 +33,4 @@ class LoginModel(db: Database)(implicit ec: ExecutionContext){
         
     }
 
-    def getUserData(userId:Int) : Seq[String] = {
-        ???
-    }
 }

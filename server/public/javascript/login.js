@@ -21,7 +21,7 @@ class Login extends React.Component {
     }
     render(){
         return (
-        ce('div',null,
+        ce('div',{className: 'login-page'},
             ce('h2',null,'Login'),
             ce('label',null,'Username'),
             ce('br'),
@@ -64,7 +64,7 @@ class SignUp extends React.Component {
         this.state = {signUpName: "",signUpPass: "",signUpPassVer: ""}
     }
     render(){
-        return ce('div',null,
+        return ce('div',{className: 'login-page'},
             ce('h2',null,'Sign Up'),
             ce('label',null,'Username'),
             ce('br'),
@@ -116,17 +116,19 @@ class LoginPage extends React.Component {
         this.state = {signUp: false}
     }
     render(){
-        return ce('div', {className: 'page'},
+        return ce('div', null,
             ce(Header,null,
                 this.state.signUp?
                 ce('button',{onClick: () => this.setState({signUp: false})},"Sign In")
                 :
                 ce('button',{onClick: () => this.setState({signUp: true})},"Sign Up")
             ),
-            this.state.signUp?
-            ce(SignUp)
-            :
-            ce(Login)
+            ce('div',{className:"login-page-container"},
+                this.state.signUp?
+                ce(SignUp)
+                :
+                ce(Login)
+            )
         )
     }
 }

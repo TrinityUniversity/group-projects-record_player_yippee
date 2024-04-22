@@ -1,20 +1,30 @@
 /* header, aside, body*/
 
+:root{
+    --header-color: #da7635;
+    --header-button-color: #e24e1b;
+    --background-color: #f5f2b8;
+    --primary-color: #8aadcd;
+    --secondary-color: #28587b;
+    --secondary-color-hover: #8aafff;
+}
+
 header{
     padding: 20px;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: left;
     color: black;
-    background: #da7635; 
+    background: var(--header-color); 
     width: calc(100% - 40px);
+    height: 85.37px;
 
 }
 
 header button {
     position:absolute;
-    top: 80px;
+    top: calc(125.37px / 2 - 37.5px / 2);
     right:60px;
-    background: #e24e1b;
+    background: var(--header-button-color);
     border:none;
     border-radius: 4px;
     padding: 10px;
@@ -22,6 +32,7 @@ header button {
     font-size: 15px;
     
 }
+
 header button:hover {
     background-color: orange;
     color: white;
@@ -29,11 +40,123 @@ header button:hover {
   
 }
 
+.title {
+    cursor: pointer;
+}
+
 body{
     width: 100%;
     margin: 0;
-    font-family:Georgia, 'Times New Roman', Times, serif;
-    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
     color: black;
-    background-color: #f5f2b8;
+    background-color: var(--background-color);
+    overflow: hidden;
+}
+
+.login-page-container{
+    display: flex;
+    justify-content: center;
+}
+
+.login-page {
+    text-align: center;
+    background-color: var(--primary-color);
+    width: 40%;
+    border-radius: 10px;
+    border: solid var(--secondary-color);
+    margin-top: 20px;
+    padding-bottom: 20px;
+}
+
+.login-page button {
+    color:white;
+    margin-top: 10px;
+    background-color: var(--secondary-color);
+    border: solid var(--secondary-color);
+    border-radius: 5px;
+}
+
+.login-page button:hover {
+    color: black;
+    cursor: pointer;
+    background-color: var(--secondary-color-hover);
+}
+
+
+aside {
+    background-color: var(--primary-color);
+    width: 25%;
+    height: 100vh;
+}
+
+.adder, .profile-card{
+    background-color: var(--secondary-color);
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+    border: solid var(--secondary-color);
+    height: 161.67px;
+    font-family: sans-serif;
+}
+
+.adder p {
+    font-size: 50px;
+    height: 100%;
+}
+
+.adder p:hover {
+    cursor:pointer;
+}
+
+.adder-form {
+    height:100%;
+}
+
+.adder-form label{
+    margin-top: 10px;
+}
+
+.adder-form button {
+    color:black;
+    margin-top: 10px;
+    background-color: var(--primary-color);
+    border: solid var(--primary-color);
+    border-radius: 5px;
+}
+
+.adder-form button:hover{
+    cursor: pointer;
+    box-shadow: inset 1px 1px 1px black;
+}
+
+.records {
+    height: calc(100vh - 125.37px - 161.67px);
+    overflow-y: scroll;
+}
+
+.records p{
+    padding:5px;
+    font-family: sans-serif;
+}
+
+.record:hover{
+    cursor: pointer;
+}
+
+.record::before {
+    display: inline-block;
+    content: "";
+    border-top: .3rem solid black;
+    width: 100%;
+}
+
+.record:first-of-type::before{
+    visibility: hidden;
+}
+
+.current-song {
+    width: 50%;
+    position:absolute;
+    top: 10px;
+    left: calc(25%);
+    text-align: center;
 }
