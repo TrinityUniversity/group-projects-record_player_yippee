@@ -44,10 +44,11 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
     withSessionUserId{ crId => 
       request.body.file("file").map{ fileTemp =>
         val name = request.body.dataParts.get("name").flatMap(_.headOption).getOrElse("Unknown")
+        val artist = request.body.dataParts.get("artist").flatMap(_.headOption).getOrElse("Unknown")
         val fileName = name.replaceAll(" ","").toLowerCase()
         val path = s"./server/public/uploads/${fileName}_${crId}.mp3"
         val file = new java.io.File(path)
-          homeModel.addSong(name,None,path,crId.toInt).map{added =>
+          homeModel.addSong(name,artist,None,path,crId.toInt).map{added =>
             if(added){
               fileTemp.ref.moveTo(file,false)
               Ok(Json.toJson(true))

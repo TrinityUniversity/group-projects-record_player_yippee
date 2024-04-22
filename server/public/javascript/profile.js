@@ -7,7 +7,7 @@ class Header extends React.Component {
     render() {
         const {children} = this.props;
         return ce('header',null,
-            ce('h1',{onClick: () => window.location.href = "/"},'Spinify'),
+            ce('h1',{onClick: () => window.location.href = "/",className:"title"},'Spinify'),
             children
         )
     }
@@ -38,9 +38,9 @@ class ProfilePage extends React.Component {
                 ce('button',{onClick: () => window.location.href = '/logout'},'Logout')
             ),
             ce(SideBar,null,
-                ce('div',null,
+                ce('div',{className: "profile-card"},
                     Object.entries(this.state.userData).map(([k,v],index) => {
-                        return ce('p',{key:index},`${k.toUpperCase()}: ${v}`)
+                        return ce('p',{key:index},`${k.toUpperCase().replace('_',' ')}: ${v}`)
                     })
                 )   
             )
