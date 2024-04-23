@@ -30,4 +30,23 @@ class ProfileModel(db: Database)(implicit ec: ExecutionContext){
             })
         }
     }
+
+    def getCollection(userId:Int,collectionId:Int):Future[Seq[PartialRecordDeliveryData]] = {
+        db.run(Collections.filter(collectionRow => collectionRow.collectionId === collectionId).result).flatMap{collection =>
+            db.run((for{
+                collectionItem <- CollectionItems if collectionItem.collectionId === collection(0).collectionId
+                record <- Records if record.recordId === collectionItem.recordId
+            } yield (record)).result).map{records =>
+                records.map{record => PartialRecordDeliveryData(record.recordId,record.name,record.fileLocation,record.artist)}
+            }
+        }
+    }
+
+    def removeRecord(record:PartialRecordDeliveryData, collectionId:Int):Future[Boolean] = {
+        db.run(Collections.filter(collectionRow => collectionRow.collectionId === collectionId).result).flatMap{collection=>
+            db.run(CollectionItems.filter(collectionItemRow => collectionItemRow.collectionId === collection(0).collectionId && collectionItemRow.recordId === record.id).delete).map{deleteCount=>
+                deleteCount>0
+            }
+        }
+    }
 }

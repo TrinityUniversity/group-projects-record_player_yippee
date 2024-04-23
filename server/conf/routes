@@ -19,6 +19,8 @@ GET        /profile                     controllers.Profile.prof()
 GET        /logout                      controllers.Profile.logout()
 GET        /user                        controllers.Profile.getUserData()
 GET        /collections                 controllers.Profile.loadCollections()
+GET        /collection/:id              controllers.Profile.getCollection(id)
+POST       /removeRecord                controllers.Profile.removeRecord()
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)

@@ -126,31 +126,50 @@ aside {
 
 .adder-form button:hover{
     cursor: pointer;
+}
+
+.adder-form button:active{
     box-shadow: inset 1px 1px 1px black;
 }
 
-.records {
+.records,.collections {
     height: calc(100vh - 125.37px - 161.67px);
     overflow-y: scroll;
 }
 
-.records p{
+.records p, .collections p{
     padding:5px;
     font-family: sans-serif;
 }
 
-.sidebar-record:hover{
+.records h3, .collections h3{
+    text-align: center;
+    text-decoration: underline;
+    position: sticky;
+    top: 0;
+    background-color: var(--primary-color);
+    margin: 0;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    border-bottom: .3rem solid black;
+}
+
+.collections {
+    text-align: center;
+}
+
+.sidebar-record:hover, .sidebar-collection:hover{
     cursor: pointer;
 }
 
-.sidebar-record::before {
+.sidebar-record::before, .sidebar-collection::before {
     display: inline-block;
     content: "";
     border-top: .3rem solid black;
     width: 100%;
 }
 
-.sidebar-record:first-of-type::before{
+.sidebar-record:first-of-type::before, .sidebar-collection:first-of-type::before{
     visibility: hidden;
 }
 
@@ -162,12 +181,15 @@ aside {
     text-align: center;
 }
 
-.record {
+.record,.collection-records {
     position: absolute;
     top: 125.37px;
     right: 0;
     height: calc(100vh - 125.37px);
     width: 75%;
+}
+
+.record {
     display: grid;
     justify-content: center;
 }
@@ -209,4 +231,52 @@ aside {
 
 .like:hover{
     cursor: pointer;
+}
+
+.collection-records {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-content: space-around;
+}
+
+.collection-record{
+    text-align: center;
+    width: 25%;
+    height: 100px;
+    border: solid var(--header-button-color);
+    border-radius: 10px;
+    background-color: var(--header-color);
+    display: grid;
+}
+
+.x-button{
+    font-family: 'Courier New', Courier, monospace;
+    height: 2px;
+    width: fit-content;
+    text-align: end;
+    margin:0;
+    justify-self: end;
+    margin-right:5px;
+}
+
+.x-button:hover,.play-button:hover{
+    cursor: pointer;
+}
+
+.x-button:hover{
+    color:white;
+}
+
+.play-button{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    background-color: var(--header-button-color);
+    border: none;
+    border-radius: 0 0 5px 5px;
+}
+
+.play-button img {
+    height: 20px;
 }

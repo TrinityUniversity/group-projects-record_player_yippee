@@ -42,7 +42,10 @@ class HomeModel(db: Database)(implicit ec: ExecutionContext){
     }
 
     def addSong(name :String,artist:String,length:Option[Double],fileLocation:String,creatorId:Int) : Future[Boolean] = {
-        db.run(Records += RecordsRow(-1,name,length,fileLocation,creatorId,artist)).map(addCount => addCount > 0)
+        db.run(Records.filter(recordRow => recordRow.fileLocation === fileLocation).result).flatMap{record=>
+            if(record.length>0)Future.successful(false)
+            else db.run(Records += RecordsRow(-1,name,length,fileLocation,creatorId,artist)).map(addCount => addCount > 0)
+        }
     }
 
     def likeSong(userId:Int,recordId:Int) : Future[Boolean] = {

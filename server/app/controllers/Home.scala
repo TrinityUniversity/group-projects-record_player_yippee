@@ -48,7 +48,7 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
         val name = request.body.dataParts.get("name").flatMap(_.headOption).getOrElse("Unknown")
         val artist = request.body.dataParts.get("artist").flatMap(_.headOption).getOrElse("Unknown")
         val fileName = name.replaceAll(" ","").toLowerCase()
-        val path = s"./server/public/uploads/${fileName}_${crId}.mp3"
+        val path = s"./server/public/uploads/${fileName}_${artist}_${crId}.mp3"
         val file = new java.io.File(path)
           homeModel.addSong(name,artist,None,path,crId.toInt).map{added =>
             if(added){

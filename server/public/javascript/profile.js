@@ -1,6 +1,9 @@
 const csrfToken = document.getElementById('csrf-token').value
 const userDataRoute = document.getElementById('user-data-route').value
 const collectionsRoute = document.getElementById('collections-route').value
+const getCollectionRoute = document.getElementById('get-collection-route').value
+const removeRoute = document.getElementById('remove-route').value
+const playSVG = document.getElementById('play-svg').value
 
 const ce = React.createElement
 
@@ -23,10 +26,52 @@ class SideBar extends React.Component {
     }
 }
 
+class CollectionDisplay extends React.Component {
+    constructor(props){
+        super(props),
+        this.state = {records:[]}
+    }
+    componentDidUpdate = (prevProps) => {
+        if(this.props.collectionId && prevProps.collectionId != this.props.collectionId) this.loadCollection()
+    }
+    render(){
+        return(
+            ce('div',{className:"collection-records"},
+                this.state.records.map((rec,index) => {
+                    return(
+                        ce('div',{key:index,className:"collection-record"},
+                            ce('p',{className:"x-button",onClick:()=> this.removeRecord(rec)},'x'),
+                            ce('p',null,`${rec.name} - ${rec.artist}`),
+                            ce('button',{className:"play-button"},ce('img',{src:playSVG}))
+                        )
+                    )
+                })
+            )
+        )
+    }
+
+    loadCollection = () => {
+        fetch(`${getCollectionRoute}${this.props.collectionId}`).then(res => res.json()).then(records => {this.setState({records})})
+    }
+
+    removeRecord = (record) =>{
+        fetch(removeRoute,{
+            method:"POST",
+            headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
+            body: JSON.stringify({record,collectionId:this.props.collectionId})
+        }).then(res => res.json()).then(res=> {
+            if(res){
+                this.loadCollection()
+                this.props.fixScreen()
+            }
+        })
+    }
+}
+
 class ProfilePage extends React.Component {
     constructor(props){
         super(props),
-        this.state = {userData: {}, collections: []}
+        this.state = {userData: {}, collections: [], selectedCollection:{}}
     }
 
     componentDidMount = () => {
@@ -37,6 +82,7 @@ class ProfilePage extends React.Component {
     render() {
         return ce('div',null,
             ce(Header,null,
+                ce('h2',{className:"current-song"},this.state.selectedCollection?.name),
                 ce('button',{onClick: () => window.location.href = '/logout'},'Logout')
             ),
             ce(SideBar,null,
@@ -45,16 +91,18 @@ class ProfilePage extends React.Component {
                         return ce('p',{key:index},`${k.toUpperCase().replace('_',' ')}: ${v}`)
                     })
                 ),
-                ce('div',null,
-                    this.state.collections.map(coll => {
-                        return(ce('div',null,
+                ce('div',{className:"collections"},
+                    ce('h3',null,"Collections"),
+                    this.state.collections.map((coll,index) => {
+                        return(ce('div',{key:index, className:"sidebar-collection", onClick: () => this.setState({selectedCollection:coll})},
                             ce('p',null,coll.name),
                             ce('p',null,`Number of Items: ${coll.numOfItems}`))
                         )
                     }
                     )
                 )
-            )
+            ),
+            ce(CollectionDisplay,{collectionId:this.state.selectedCollection?.id,fixScreen:()=>{this.getUserData();this.loadCollections()}},null)
         )
     }
 
@@ -63,7 +111,7 @@ class ProfilePage extends React.Component {
     }
 
     loadCollections = () => {
-        fetch(collectionsRoute).then(res => res.json()).then(res =>this.setState({collections: res}))
+        fetch(collectionsRoute).then(res => res.json()).then(res =>this.setState({collections: res,selectedCollection:res[0]}))
     }
 }
 

@@ -70,6 +70,7 @@ class RecordsDisplay extends React.Component {
                 
             ),
             ce('div',{className:"records"},
+                ce('h3',null,"Records"),
                 this.state.records.map((record,index) => 
                     ce("div",{id:record.id, className:"sidebar-record", key:index, onClick: () => this.getSong(record)},
                         ce('p',null,`${record.name} - ${record.artist}`),
@@ -99,7 +100,7 @@ class RecordsDisplay extends React.Component {
     }
 
     loadRecords() {
-        fetch(recordsRoute).then(res => res.json()).then(records => {this.setState({records})})
+        fetch(recordsRoute).then(res => res.json()).then(records => {this.setState({records});this.getSong(records[0])})
     }
 
     addSong() {
@@ -145,7 +146,7 @@ class RecordPlayer extends React.Component {
         super(props),
         this.state = {playing:false}
     }
-    componentDidUpdate = (prevProps,prevState,snapshot) =>{
+    componentDidUpdate = (prevProps) =>{
         if(prevProps.recordUrl != this.props.recordUrl){
             this.setState({playing:false})
             document.getElementById('record-image').classList.remove('active')
