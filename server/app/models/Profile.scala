@@ -31,18 +31,30 @@ class ProfileModel(db: Database)(implicit ec: ExecutionContext){
         }
     }
 
-    def getCollection(userId:Int,collectionId:Int):Future[Seq[PartialRecordDeliveryData]] = {
+    def getCollection(userId:Int,collectionId:Int):Future[Seq[RecordDeliveryData]] = {
         db.run(Collections.filter(collectionRow => collectionRow.collectionId === collectionId).result).flatMap{collection =>
             db.run((for{
                 collectionItem <- CollectionItems if collectionItem.collectionId === collection(0).collectionId
                 record <- Records if record.recordId === collectionItem.recordId
-            } yield (record)).result).map{records =>
-                records.map{record => PartialRecordDeliveryData(record.recordId,record.name,record.fileLocation,record.artist)}
+            } yield (record)).result).flatMap{records =>
+                Future.sequence(records.map{record => 
+                    db.run(Users.filter(userRow => userRow.id === record.creatorId).result).flatMap{user=>
+                        db.run(Collections.filter(collectionRow=>collectionRow.userId === user(0).id && collectionRow.name==="Liked").result).flatMap{collection =>
+                            if(collection.length == 0){
+                                Future.successful(RecordDeliveryData(record.recordId,record.name,record.length,record.fileLocation,user(0).username,record.artist,false))
+                            }else{
+                                db.run(CollectionItems.filter(collectionItemRow => collectionItemRow.collectionId === collection(0).collectionId && collectionItemRow.recordId === record.recordId).result).map{collectionItem =>
+                                    RecordDeliveryData(record.recordId,record.name,record.length,record.fileLocation,user(0).username,record.artist,collectionItem.length>0)
+                                }
+                            }
+                        }
+                    }
+                })
             }
         }
     }
 
-    def removeRecord(record:PartialRecordDeliveryData, collectionId:Int):Future[Boolean] = {
+    def removeRecord(record:RecordDeliveryData, collectionId:Int):Future[Boolean] = {
         db.run(Collections.filter(collectionRow => collectionRow.collectionId === collectionId).result).flatMap{collection=>
             db.run(CollectionItems.filter(collectionItemRow => collectionItemRow.collectionId === collection(0).collectionId && collectionItemRow.recordId === record.id).delete).map{deleteCount=>
                 deleteCount>0

@@ -20,6 +20,12 @@ header{
 
 }
 
+header h1{
+    font-size: 3rem;
+    position: relative;
+    top: -25px;
+}
+
 header button {
     position:absolute;
     top: calc(125.37px / 2 - 37.5px / 2);
@@ -252,12 +258,13 @@ aside {
 
 .x-button{
     font-family: 'Courier New', Courier, monospace;
-    height: 2px;
+    height: 1rem;
     width: fit-content;
     text-align: end;
-    margin:0;
+    margin:0 5px 0 0;
     justify-self: end;
-    margin-right:5px;
+    z-index: 100px;
+    font-size: 1rem;
 }
 
 .x-button:hover,.play-button:hover{
@@ -279,4 +286,24 @@ aside {
 
 .play-button img {
     height: 20px;
+}
+
+.collection-record-name {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.collection-record-username{
+    margin:0;
+}
+
+.plus-button{
+    position: absolute;
+    top: 145.37px;
+    left: calc(25% + 10px);
+    height: 7%;
+}
+
+.plus-button:hover{
+    cursor: pointer;
 }

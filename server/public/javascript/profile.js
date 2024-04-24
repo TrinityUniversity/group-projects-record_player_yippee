@@ -41,8 +41,9 @@ class CollectionDisplay extends React.Component {
                     return(
                         ce('div',{key:index,className:"collection-record"},
                             ce('p',{className:"x-button",onClick:()=> this.removeRecord(rec)},'x'),
-                            ce('p',null,`${rec.name} - ${rec.artist}`),
-                            ce('button',{className:"play-button"},ce('img',{src:playSVG}))
+                            ce('p',{className:"collection-record-name"},`${rec.name} - ${rec.artist}`),
+                            ce('p',{className:"collection-record-username"},`"${rec.creatorName}'s Version"`),
+                            ce('button',{className:"play-button",onClick: () => this.playRecord(rec)},ce('img',{src:playSVG}))
                         )
                     )
                 })
@@ -65,6 +66,11 @@ class CollectionDisplay extends React.Component {
                 this.props.fixScreen()
             }
         })
+    }
+
+    playRecord = (record) => {
+        window.localStorage.setItem('current-record',JSON.stringify(record))
+        window.location.href = '/'
     }
 }
 
