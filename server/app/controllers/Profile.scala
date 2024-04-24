@@ -21,6 +21,10 @@ class Profile @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, 
 
     implicit val CollectionDeliveryDataWrites : Writes[CollectionDeliveryData] = Json.writes[CollectionDeliveryData]
 
+    implicit val collectionDataWrites : Writes[CollectionData] = Json.writes[CollectionData]
+
+    implicit val collectionDataReads : Reads[CollectionData] = Json.reads[CollectionData]
+
     implicit val RecordDeliveryDataWrites : Writes[RecordDeliveryData] = Json.writes[RecordDeliveryData]
 
     implicit val RecordDeliveryDataReads : Reads[RecordDeliveryData] = Json.reads[RecordDeliveryData]

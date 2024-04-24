@@ -6,7 +6,7 @@ case class UserCreationData(username:String,email:String,password:String,passwor
 
 case class CollectionData(id:Int,name:String)
 
-case class RecordDeliveryData(id:Int,name:String,length:Option[Double],fileLocation:String,creatorName:String,artist:String,liked:Boolean)
+case class RecordDeliveryData(id:Int,name:String,length:Option[Double],fileLocation:String,creatorName:String,artist:String,collections:Seq[CollectionData])
 
 case class PartialRecordDeliveryData(id:Int,name:String,fileLocation:String,artist:String)
 

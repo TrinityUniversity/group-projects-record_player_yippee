@@ -219,7 +219,7 @@ class HomePage extends React.Component {
             :
             "",
             this.state.record.name?
-            ce('img',{className:"like",src:this.state.record.liked?filledStarSVG:starSVG,onClick:() => this.handleLike()})
+            ce('img',{className:"like",src:this.state.record.collections.filter(coll => coll.name === "Liked").length>0?filledStarSVG:starSVG,onClick:() => this.handleLike()})
             :
             "",
             this.state.record.name?
@@ -236,7 +236,11 @@ class HomePage extends React.Component {
             body: JSON.stringify(this.state.record)
         }).then(res => res.json()).then(res=> {
             if(res){
-                this.setState({record:{...this.state.record,liked:!this.state.record.liked},likeCounter:this.state.likeCounter+1})
+                if(this.state.record.collections.filter(coll => coll.name === "Liked").length>0){
+                    this.setState({record:{...this.state.record,collections:this.state.record.collections.filter(coll => coll.name !== "Liked")},likeCounter:this.state.likeCounter+1})
+                }else{
+                    this.setState({record:{...this.state.record,collections:this.state.record.collections.concat({id:-1,name:"Liked"})},likeCounter:this.state.likeCounter+1})
+                }
             }
         })
     }

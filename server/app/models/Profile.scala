@@ -39,17 +39,14 @@ class ProfileModel(db: Database)(implicit ec: ExecutionContext){
             } yield (record)).result).flatMap{records =>
                 Future.sequence(records.map{record => 
                     db.run(Users.filter(userRow => userRow.id === record.creatorId).result).flatMap{user=>
-                        db.run(Collections.filter(collectionRow=>collectionRow.userId === user(0).id && collectionRow.name==="Liked").result).flatMap{collection =>
-                            if(collection.length == 0){
-                                Future.successful(RecordDeliveryData(record.recordId,record.name,record.length,record.fileLocation,user(0).username,record.artist,false))
-                            }else{
-                                db.run(CollectionItems.filter(collectionItemRow => collectionItemRow.collectionId === collection(0).collectionId && collectionItemRow.recordId === record.recordId).result).map{collectionItem =>
-                                    RecordDeliveryData(record.recordId,record.name,record.length,record.fileLocation,user(0).username,record.artist,collectionItem.length>0)
-                                }
-                            }
+                        db.run((for{
+                            collectionItem <- CollectionItems if collectionItem.recordId === record.recordId
+                            collection <- Collections if collection.collectionId === collectionItem.collectionId
+                        } yield (collection)).result).map{collections =>
+                                RecordDeliveryData(record.recordId,record.name,record.length,record.fileLocation,user(0).username,record.artist,collections.map(coll => CollectionData(coll.collectionId,coll.name)))
                         }
-                    }
-                })
+                            }
+                    })
             }
         }
     }

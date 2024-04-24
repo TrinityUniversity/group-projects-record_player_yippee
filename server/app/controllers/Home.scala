@@ -17,6 +17,10 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
   
   val homeModel = new HomeModel(db)
 
+  implicit val collectionDataWrites : Writes[CollectionData] = Json.writes[CollectionData]
+
+  implicit val collectionDataReads : Reads[CollectionData] = Json.reads[CollectionData]
+
   implicit val recordDeliveryDataWrites : Writes[RecordDeliveryData] = Json.writes[RecordDeliveryData]
 
   implicit val recordDeliveryDataReads : Reads[RecordDeliveryData] = Json.reads[RecordDeliveryData]
@@ -85,7 +89,7 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
   def likeSong() = Action.async{ implicit request =>
     withSessionUserId{ud =>
       withJsonBody[RecordDeliveryData]{record=>
-        if(record.liked){
+        if(record.collections.filter(coll => coll.name == "Liked").length > 0){
           homeModel.dislikeSong(ud.toInt,record.id).map{result =>
             Ok(Json.toJson(result))  
           }

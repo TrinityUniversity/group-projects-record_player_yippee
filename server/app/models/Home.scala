@@ -12,14 +12,11 @@ class HomeModel(db: Database)(implicit ec: ExecutionContext){
             user <- Users if record.creatorId === user.id
         } yield (record,user)).result).flatMap{result => 
             Future.sequence(result.map{recordRow =>
-                db.run(Collections.filter(collectionRow=>collectionRow.userId === id && collectionRow.name==="Liked").result).flatMap{collection =>
-                    if(collection.length == 0){
-                        Future.successful(RecordDeliveryData(recordRow._1.recordId,recordRow._1.name,recordRow._1.length,recordRow._1.fileLocation,recordRow._2.username,recordRow._1.artist,false))
-                    }else{
-                        db.run(CollectionItems.filter(collectionItemRow => collectionItemRow.collectionId === collection(0).collectionId && collectionItemRow.recordId === recordRow._1.recordId).result).map{collectionItem =>
-                            RecordDeliveryData(recordRow._1.recordId,recordRow._1.name,recordRow._1.length,recordRow._1.fileLocation,recordRow._2.username,recordRow._1.artist,collectionItem.length>0)
-                        }
-                    }
+                db.run((for{
+                    collectionItem <- CollectionItems if collectionItem.recordId === recordRow._1.recordId
+                    collection <- Collections if collection.collectionId === collectionItem.collectionId
+                } yield (collection)).result).map{collections =>
+                        RecordDeliveryData(recordRow._1.recordId,recordRow._1.name,recordRow._1.length,recordRow._1.fileLocation,recordRow._2.username,recordRow._1.artist,collections.map(coll => CollectionData(coll.collectionId,coll.name)))
                 }
             })
         }
@@ -28,14 +25,11 @@ class HomeModel(db: Database)(implicit ec: ExecutionContext){
     def fetchSong(id:Int) : Future[RecordDeliveryData] = {
         db.run(Records.filter(recordRow => recordRow.recordId === id).result).flatMap{result =>
             db.run(Users.filter(userRow => userRow.id === result(0).creatorId).result).flatMap{ user => 
-                db.run(Collections.filter(collectionRow=>collectionRow.userId === user(0).id && collectionRow.name==="Liked").result).flatMap{collection =>
-                    if(collection.length == 0){
-                        Future.successful(RecordDeliveryData(result(0).recordId,result(0).name,result(0).length,result(0).fileLocation,user(0).username,result(0).artist,false))
-                    }else{
-                        db.run(CollectionItems.filter(collectionItemRow => collectionItemRow.collectionId === collection(0).collectionId && collectionItemRow.recordId === result(0).recordId).result).map{collectionItem =>
-                            RecordDeliveryData(result(0).recordId,result(0).name,result(0).length,result(0).fileLocation,user(0).username,result(0).artist,collectionItem.length>0)
-                        }
-                    }
+                db.run((for{
+                    collectionItem <- CollectionItems if collectionItem.recordId === result(0).recordId
+                    collection <- Collections if collection.collectionId === collectionItem.collectionId
+                } yield (collection)).result).map{collections =>
+                        RecordDeliveryData(result(0).recordId,result(0).name,result(0).length,result(0).fileLocation,user(0).username,result(0).artist,collections.map(coll => CollectionData(coll.collectionId,coll.name)))
                 }
             }
         }
