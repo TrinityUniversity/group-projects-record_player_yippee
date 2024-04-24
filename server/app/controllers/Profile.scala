@@ -19,8 +19,31 @@ class Profile @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, 
 
     implicit val UserDeliveryDataWrites : Writes[UserDeliveryData] = Json.writes[UserDeliveryData]
 
+    implicit val CollectionDeliveryDataWrites : Writes[CollectionDeliveryData] = Json.writes[CollectionDeliveryData]
+
+    implicit val collectionDataWrites : Writes[CollectionData] = Json.writes[CollectionData]
+
+    implicit val collectionDataReads : Reads[CollectionData] = Json.reads[CollectionData]
+
+    implicit val RecordDeliveryDataWrites : Writes[RecordDeliveryData] = Json.writes[RecordDeliveryData]
+
+    implicit val RecordDeliveryDataReads : Reads[RecordDeliveryData] = Json.reads[RecordDeliveryData]
+
+    implicit val RecordCollectionDataReads : Reads[RecordCollectionData] = Json.reads[RecordCollectionData]
+
+    implicit val CollectionIdDataReads : Reads[CollectionIdData] = Json.reads[CollectionIdData]
+
     def withSessionUserId(f:String => Future[Result])(implicit request: Request[Any]) : Future[Result] = {
         request.session.get("userId").map(f).getOrElse(Future.successful(Ok(Json.toJson(Seq.empty[String]))))
+    }
+
+    def withJsonBody[A](f: A => Future[Result])(implicit request:Request[AnyContent], reads: Reads[A]) :Future[Result] = {
+        request.body.asJson.map{ body =>
+            Json.fromJson[A](body) match {
+                case JsSuccess(a,path) => f(a)
+                case e @ JsError(_) => Future.successful(Redirect(routes.Login.login()))
+            }
+        }.getOrElse(Future.successful(Redirect(routes.Login.login())))
     }
 
     def prof = Action { implicit request =>
@@ -36,6 +59,38 @@ class Profile @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, 
     def getUserData() = Action.async { implicit request =>
         withSessionUserId{ id =>
             model.getUserData(id.toInt).map{result => 
+                Ok(Json.toJson(result))
+            }
+        }
+    }
+
+    def loadCollections() = Action.async { implicit request =>
+        withSessionUserId{id =>
+            model.loadCollections(id.toInt).map{result =>
+                Ok(Json.toJson(result))
+            }
+        }   
+    }
+
+    def getCollection(collectionId:String) = Action.async {implicit request =>
+        withSessionUserId{id => 
+            model.getCollection(id.toInt,collectionId.toInt).map{result =>
+                Ok(Json.toJson(result))
+            }
+        }
+    }
+
+    def removeRecord() = Action.async{implicit request =>
+        withJsonBody[RecordCollectionData]{data =>
+            model.removeRecord(data.record,data.collectionId).map{result =>
+                Ok(Json.toJson(result))
+            }
+        }
+    }
+
+    def removeCollection() = Action.async{implicit request =>
+        withJsonBody[CollectionIdData]{data =>
+            model.removeCollection(data.id).map{result =>
                 Ok(Json.toJson(result))
             }
         }

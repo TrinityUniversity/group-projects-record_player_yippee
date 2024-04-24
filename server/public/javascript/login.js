@@ -98,7 +98,7 @@ class SignUp extends React.Component {
             fetch(signUpRoute,{
                 method: "POST",
                 headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
-                body: JSON.stringify({username: this.state.signUpName, password: this.state.signUpPass})
+                body: JSON.stringify({username: this.state.signUpName.trim().replace(/\s/g,''), password: this.state.signUpPass})
                 }
             ).then(res => res.json())
             .then(valid => {

@@ -17,9 +17,19 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
   
   val homeModel = new HomeModel(db)
 
+  implicit val collectionDataWrites : Writes[CollectionData] = Json.writes[CollectionData]
+
+  implicit val collectionDataReads : Reads[CollectionData] = Json.reads[CollectionData]
+
   implicit val recordDeliveryDataWrites : Writes[RecordDeliveryData] = Json.writes[RecordDeliveryData]
 
+  implicit val recordDeliveryDataReads : Reads[RecordDeliveryData] = Json.reads[RecordDeliveryData]
+
   implicit val pathDataReads : Reads[PathData] = Json.reads[PathData]
+
+  implicit val collectionEntryDataReads : Reads[CollectionEntryData] = Json.reads[CollectionEntryData]
+
+  implicit val collectionRecordData : Reads[CollectionRecordData] = Json.reads[CollectionRecordData]
 
   def withSessionUserId(f:String => Future[Result])(implicit request: Request[Any]) : Future[Result] = {
         request.session.get("userId").map(f).getOrElse(Future.successful(Ok(Json.toJson(Seq.empty[String]))))
@@ -46,7 +56,7 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
         val name = request.body.dataParts.get("name").flatMap(_.headOption).getOrElse("Unknown")
         val artist = request.body.dataParts.get("artist").flatMap(_.headOption).getOrElse("Unknown")
         val fileName = name.replaceAll(" ","").toLowerCase()
-        val path = s"./server/public/uploads/${fileName}_${crId}.mp3"
+        val path = s"./server/public/uploads/${fileName}_${artist}_${crId}.mp3"
         val file = new java.io.File(path)
           homeModel.addSong(name,artist,None,path,crId.toInt).map{added =>
             if(added){
@@ -73,8 +83,53 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
   }
 
   def getSongs() = Action.async { implicit request => 
-    homeModel.fetchSongs().map{ result =>
-       Ok(Json.toJson(result))
+    withSessionUserId{ud =>
+      homeModel.fetchSongs(ud.toInt).map{ result =>
+        Ok(Json.toJson(result))
+      }
     }
   }
+
+  def likeSong() = Action.async{ implicit request =>
+    withSessionUserId{ud =>
+      withJsonBody[RecordDeliveryData]{record=>
+        if(record.collections.filter(coll => coll.name == "Liked").length > 0){
+          homeModel.dislikeSong(ud.toInt,record.id).map{result =>
+            Ok(Json.toJson(result))  
+          }
+        }else{
+          homeModel.likeSong(ud.toInt,record.id).map{result =>
+            Ok(Json.toJson(result))
+        }
+      }
+    }
+    }
+  }
+
+  def getCollections() = Action.async {implicit request =>
+    withSessionUserId{id =>
+      homeModel.getCollections(id.toInt).map{result=>
+        Ok(Json.toJson(result))
+      }
+    }
+  }
+
+  def addCollection() = Action.async { implicit request =>
+    withSessionUserId{ userId =>
+      withJsonBody[CollectionEntryData]{data =>
+        homeModel.addCollection(data.name,userId.toInt).map{id =>
+          Ok(Json.toJson(id))
+        }
+      } 
+    }
+  }
+
+  def addToCollection() = Action.async{ implicit request =>
+    withJsonBody[CollectionRecordData]{ crd =>
+      homeModel.addToCollection(crd.collectionId,crd.recordId).map{result =>
+        Ok(Json.toJson(result))
+      }
+    }
+  }
+
 }

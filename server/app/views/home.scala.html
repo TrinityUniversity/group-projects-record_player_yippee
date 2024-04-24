@@ -6,6 +6,14 @@
     <input type="hidden" id="get-song-route" value="@routes.Home.getSong()">
     <input type="hidden" id="get-songs-route" value="@routes.Home.getSongs()">
     <input type="hidden" id="add-song-route" value="@routes.Home.addSong()">
+    <input type="hidden" id="like-route" value="@routes.Home.likeSong()">
+    <input type="hidden" id="collections-route" value="@routes.Home.getCollections()">
+    <input type="hidden" id="add-collection-route" value="@routes.Home.addCollection()">
+    <input type="hidden" id="add-to-collection-route" value="@routes.Home.addToCollection()">
+    <input type="hidden" id="vinyl-svg" value="@routes.Assets.versioned("images/vinyl.svg")">
+    <input type="hidden" id="star-svg" value="@routes.Assets.versioned("images/star.svg")">
+    <input type="hidden" id="filled-star-svg" value="@routes.Assets.versioned("images/filled-star.svg")">
+    <input type="hidden" id="plus-svg" value="@routes.Assets.versioned("images/plus.svg")">
     <div id="root"></div>
     <script src="@routes.Assets.versioned("javascript/home.js")"></script>
 }

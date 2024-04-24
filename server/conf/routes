@@ -12,11 +12,19 @@ GET        /                            controllers.Home.home()
 GET        /songs                       controllers.Home.getSongs()
 POST       /addSong                     controllers.Home.addSong()
 POST       /getSong                     controllers.Home.getSong()
+POST       /likeSong                    controllers.Home.likeSong()
+GET        /collections                 controllers.Home.getCollections()
+POST       /addCollection               controllers.Home.addCollection()
+POST       /addToCollection             controllers.Home.addToCollection()
 
 # Profile page
 GET        /profile                     controllers.Profile.prof()
 GET        /logout                      controllers.Profile.logout()
 GET        /user                        controllers.Profile.getUserData()
+GET        /profile/collections         controllers.Profile.loadCollections()
+GET        /profile/collection/:id      controllers.Profile.getCollection(id)
+POST       /removeRecord                controllers.Profile.removeRecord()
+POST       /removeCollection            controllers.Profile.removeCollection()
 
 # Prefix must match `play.assets.urlPrefix`
 GET        /assets/*file                 controllers.Assets.at(file)
