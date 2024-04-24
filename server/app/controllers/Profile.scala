@@ -31,6 +31,8 @@ class Profile @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, 
 
     implicit val RecordCollectionDataReads : Reads[RecordCollectionData] = Json.reads[RecordCollectionData]
 
+    implicit val CollectionIdDataReads : Reads[CollectionIdData] = Json.reads[CollectionIdData]
+
     def withSessionUserId(f:String => Future[Result])(implicit request: Request[Any]) : Future[Result] = {
         request.session.get("userId").map(f).getOrElse(Future.successful(Ok(Json.toJson(Seq.empty[String]))))
     }
@@ -81,6 +83,14 @@ class Profile @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, 
     def removeRecord() = Action.async{implicit request =>
         withJsonBody[RecordCollectionData]{data =>
             model.removeRecord(data.record,data.collectionId).map{result =>
+                Ok(Json.toJson(result))
+            }
+        }
+    }
+
+    def removeCollection() = Action.async{implicit request =>
+        withJsonBody[CollectionIdData]{data =>
+            model.removeCollection(data.id).map{result =>
                 Ok(Json.toJson(result))
             }
         }

@@ -59,4 +59,32 @@ class HomeModel(db: Database)(implicit ec: ExecutionContext){
         }
     }
 
+    def getCollections(userId:Int) : Future[Seq[CollectionData]] = {
+        db.run(Collections.filter(collectionRow => collectionRow.userId === userId && collectionRow.name =!= "Liked").result).map{collections =>
+            collections.map(collection => CollectionData(collection.collectionId,collection.name))
+        }
+    }
+
+    def addCollection(name:String,userId:Int) : Future[Int] = {
+        db.run(Collections.filter(collectionRow => collectionRow.name === name).result).flatMap{result =>
+            if(result.length >0)Future.successful(result(0).collectionId)
+            else{
+                db.run(Collections += CollectionsRow(-1,name,userId)).flatMap{addCount =>
+                    if(addCount > 0)db.run(Collections.filter(collectionRow => collectionRow.name === name).result).map(collection => collection(0).collectionId)
+                    else Future.successful(-1)
+                }
+            }
+        }
+    }
+
+    def addToCollection(collectionId:Int,recordId:Int) : Future[Boolean] = {
+        db.run(CollectionItems.filter(collectionItemRow => collectionItemRow.collectionId === collectionId && collectionItemRow.recordId === recordId).result).flatMap{result =>
+            if(result.length > 0)Future.successful(false)
+            else{
+                db.run(Collections.filter(collectionRow => collectionRow.collectionId === collectionId).result).flatMap{collection =>
+                    db.run(CollectionItems += CollectionItemsRow(-1,collectionId,recordId)).map(addCount => addCount>0)
+                }
+            }
+        }
+    }
 }

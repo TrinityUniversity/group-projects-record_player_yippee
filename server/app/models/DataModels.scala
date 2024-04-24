@@ -16,5 +16,11 @@ case class CollectionDeliveryData(id:Int,name:String,numOfItems:Int)
 
 case class RecordCollectionData(record:RecordDeliveryData,collectionId:Int)
 
+case class CollectionRecordData(collectionId:Int,recordId:Int)
+
+case class CollectionEntryData(name:String)
+
+case class CollectionIdData(id:Int)
+
 //variable names need to have an _ between words and they must be all lowercase because they are used when converted to JSON
 case class UserDeliveryData(username:String,date_joined:String,songs_added:Int,songs_liked:Int)

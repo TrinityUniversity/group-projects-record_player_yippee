@@ -3,6 +3,9 @@ const addSongRoute = document.getElementById('add-song-route').value
 const csrfToken = document.getElementById('csrf-token').value
 const getSongRoute = document.getElementById('get-song-route').value
 const likeRoute = document.getElementById("like-route").value
+const collectionsRoute = document.getElementById('collections-route').value
+const addCollectionRoute = document.getElementById('add-collection-route').value
+const addToCollectionRoute = document.getElementById('add-to-collection-route').value
 const vinylSVG = document.getElementById('vinyl-svg').value
 const starSVG = document.getElementById('star-svg').value
 const filledStarSVG = document.getElementById('filled-star-svg').value
@@ -124,8 +127,8 @@ class RecordsDisplay extends React.Component {
         if(this.state.name !== "" && this.state.artist !== "" && this.state.file !== null){
             const fd = new FormData()
             fd.append('file',this.state.file)
-            fd.append('name',this.state.name)
-            fd.append('artist',this.state.artist)
+            fd.append('name',this.state.name.trim())
+            fd.append('artist',this.state.artist.trim())
             try{
                 fetch(addSongRoute, {
                     method: "POST",
@@ -149,7 +152,6 @@ class RecordsDisplay extends React.Component {
         .then(res => {
             if(res.status == 200){
                 res.blob().then(blob => {
-                    console.log(record)
                     this.props.recordUpdate({recordUrl:URL.createObjectURL(blob),record})
                 })
             }
@@ -196,7 +198,19 @@ class RecordPlayer extends React.Component {
 class HomePage extends React.Component {
     constructor(props){
         super(props),
-        this.state = {signUp: false, recordUrl: "/", record:{}, likeCounter:0}
+        this.state = {
+            signUp: false, 
+            recordUrl: "/", 
+            record:{}, 
+            collections: [],
+            showCollections: false,
+            collectionName: "",
+            likeCounter:0
+        }
+        this.myRef = React.createRef()
+    }
+    componentDidMount = () => {
+        document.addEventListener("mousedown", this.handleOutsideClick);
     }
     render(){
         return ce('div', {className: 'page'}, 
@@ -222,11 +236,49 @@ class HomePage extends React.Component {
             ce('img',{className:"like",src:this.state.record.collections.filter(coll => coll.name === "Liked").length>0?filledStarSVG:starSVG,onClick:() => this.handleLike()})
             :
             "",
-            this.state.record.name?
-            ce('img',{className:"plus-button",src:plusSVG})
+            this.state.record.name && !this.state.showCollections?
+            ce('img',{className:"plus-button",src:plusSVG,onClick: ()=> {
+                this.handlePlusClick()
+            }})
+            :
+            "",
+            this.state.showCollections?
+            ce('div',{ref:this.myRef,className:"collections-adding"},
+                this.state.collections.filter(coll => this.state.record.collections.map(c => c.id).find((e) => e==coll.id) == undefined).map((coll,index) => ce('p',{key:index,onClick:()=>this.addToCollection(coll.id)},coll.name)),
+                ce('input',{type:"text",placeholder:"Create New Collection!",value:this.state.collectionName, onKeyPress: (e) => this.handleSubmit(e),onChange: (e) => this.setState({collectionName: e.target.value})})
+                )
             :
             ""
         )
+    }
+
+    addToCollection = (collectionId) => {
+        fetch(addToCollectionRoute,{
+            method: "POST",
+            headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
+            body: JSON.stringify({collectionId,recordId:this.state.record.id})
+        }).then(res => res.json()).then(res => {
+            if(res)this.setState({showCollections:false,record:{...this.state.record,collections:this.state.record.collections.concat({id:collectionId,name:""})}})
+        })
+    }
+
+    handleSubmit = (e) => {
+        if(e.key === "Enter" && this.state.collectionName.replace(/\s/g,'') !== ''){
+            fetch(addCollectionRoute,{
+                method:"POST",
+                headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
+                body: JSON.stringify({name:this.state.collectionName.trim()})
+            }).then(res => res.json()).then(res => {
+                if(res!=-1){
+                    this.setState({collectionName:""})
+                    this.addToCollection(res)
+                }
+            })
+        }
+    }
+
+    getCollections = () => {
+        fetch(collectionsRoute).then(res => res.json()).then(collections => this.setState({collections}))
     }
 
     handleLike = () =>{
@@ -243,6 +295,17 @@ class HomePage extends React.Component {
                 }
             }
         })
+    }
+
+    handlePlusClick = () => {
+        this.getCollections()
+        this.setState({showCollections:true})
+    }
+
+    handleOutsideClick = (e) => {
+        if(this.myRef.current && !this.myRef.current.contains(e.target)){
+            this.setState({showCollections:false});
+        }
     }
 }
 

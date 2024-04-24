@@ -58,4 +58,8 @@ class ProfileModel(db: Database)(implicit ec: ExecutionContext){
             }
         }
     }
+
+    def removeCollection(id:Int):Future[Boolean] = {
+        db.run(Collections.filter(collectionRow => collectionRow.collectionId === id).delete).map(deleteCount => deleteCount>0)
+    }
 }

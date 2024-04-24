@@ -3,6 +3,7 @@ const userDataRoute = document.getElementById('user-data-route').value
 const collectionsRoute = document.getElementById('collections-route').value
 const getCollectionRoute = document.getElementById('get-collection-route').value
 const removeRoute = document.getElementById('remove-route').value
+const removeCollectionRoute = document.getElementById('remove-collection-route').value
 const playSVG = document.getElementById('play-svg').value
 
 const ce = React.createElement
@@ -82,7 +83,7 @@ class ProfilePage extends React.Component {
 
     componentDidMount = () => {
         this.getUserData()
-        this.loadCollections()
+        this.loadCollections(true)
     }
 
     render() {
@@ -100,15 +101,18 @@ class ProfilePage extends React.Component {
                 ce('div',{className:"collections"},
                     ce('h3',null,"Collections"),
                     this.state.collections.map((coll,index) => {
-                        return(ce('div',{key:index, className:"sidebar-collection", onClick: () => this.setState({selectedCollection:coll})},
-                            ce('p',null,coll.name),
-                            ce('p',null,`Number of Items: ${coll.numOfItems}`))
+                        return(ce('div',{key:index, className:"sidebar-collection"},
+                            ce('p',{className:'x-button',onClick:()=>this.removeCollection(coll.id)},'x'),
+                            ce('div',{className:"inner-sidebar-collection",onClick: () => this.setState({selectedCollection:coll})},
+                                ce('p',null,coll.name),
+                                ce('p',null,`Number of Items: ${coll.numOfItems}`))
+                            )
                         )
                     }
                     )
                 )
             ),
-            ce(CollectionDisplay,{collectionId:this.state.selectedCollection?.id,fixScreen:()=>{this.getUserData();this.loadCollections()}},null)
+            ce(CollectionDisplay,{collectionId:this.state.selectedCollection?.id,fixScreen:()=>{this.getUserData();this.loadCollections(false)}},null)
         )
     }
 
@@ -116,8 +120,19 @@ class ProfilePage extends React.Component {
         fetch(userDataRoute).then(res => res.json()).then(userData => this.setState({userData}))
     }
 
-    loadCollections = () => {
-        fetch(collectionsRoute).then(res => res.json()).then(res =>this.setState({collections: res,selectedCollection:res[0]}))
+    loadCollections = (updateSelected) => {
+        fetch(collectionsRoute).then(res => res.json()).then(res =>{
+            if(updateSelected)this.setState({collections: res,selectedCollection:res[0]})
+            else this.setState({collections: res})
+        })
+    }
+
+    removeCollection = (id) => {
+        fetch(removeCollectionRoute,{
+            method:"POST",
+            headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
+            body: JSON.stringify({id})
+        }).then(res => res.json()).then(res => {if(res)this.loadCollections((this.state.selectedCollection.id == id))})
     }
 }
 

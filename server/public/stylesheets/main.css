@@ -164,7 +164,11 @@ aside {
     text-align: center;
 }
 
-.sidebar-record:hover, .sidebar-collection:hover{
+.sidebar-collection{
+    display: grid;
+}
+
+.sidebar-record:hover, .inner-sidebar-collection:hover{
     cursor: pointer;
 }
 
@@ -302,6 +306,25 @@ aside {
     top: 145.37px;
     left: calc(25% + 10px);
     height: 7%;
+}
+
+.collections-adding{
+    position:absolute;
+    top: 145.37px;
+    left: calc(25% + 10px);
+    background-color: var(--header-color);
+    width: fit-content;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.collections-adding p:hover{
+    cursor: pointer;
+}
+
+.collections-adding input{
+    border-radius: 10px;
+    position: relative;
 }
 
 .plus-button:hover{

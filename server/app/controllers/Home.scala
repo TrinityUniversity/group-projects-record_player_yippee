@@ -27,6 +27,10 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
 
   implicit val pathDataReads : Reads[PathData] = Json.reads[PathData]
 
+  implicit val collectionEntryDataReads : Reads[CollectionEntryData] = Json.reads[CollectionEntryData]
+
+  implicit val collectionRecordData : Reads[CollectionRecordData] = Json.reads[CollectionRecordData]
+
   def withSessionUserId(f:String => Future[Result])(implicit request: Request[Any]) : Future[Result] = {
         request.session.get("userId").map(f).getOrElse(Future.successful(Ok(Json.toJson(Seq.empty[String]))))
   }
@@ -101,4 +105,31 @@ class Home @Inject()(protected val dbConfigProvider: DatabaseConfigProvider, cc:
     }
     }
   }
+
+  def getCollections() = Action.async {implicit request =>
+    withSessionUserId{id =>
+      homeModel.getCollections(id.toInt).map{result=>
+        Ok(Json.toJson(result))
+      }
+    }
+  }
+
+  def addCollection() = Action.async { implicit request =>
+    withSessionUserId{ userId =>
+      withJsonBody[CollectionEntryData]{data =>
+        homeModel.addCollection(data.name,userId.toInt).map{id =>
+          Ok(Json.toJson(id))
+        }
+      } 
+    }
+  }
+
+  def addToCollection() = Action.async{ implicit request =>
+    withJsonBody[CollectionRecordData]{ crd =>
+      homeModel.addToCollection(crd.collectionId,crd.recordId).map{result =>
+        Ok(Json.toJson(result))
+      }
+    }
+  }
+
 }
