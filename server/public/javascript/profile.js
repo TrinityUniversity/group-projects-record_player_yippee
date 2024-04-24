@@ -33,7 +33,8 @@ class CollectionDisplay extends React.Component {
         this.state = {records:[]}
     }
     componentDidUpdate = (prevProps) => {
-        if(this.props.collectionId && prevProps.collectionId != this.props.collectionId) this.loadCollection()
+        if(!this.props.collectionId && prevProps.collectionId != this.props.collectionId)this.setState({records:[]})
+        else if(this.props.collectionId && prevProps.collectionId != this.props.collectionId) this.loadCollection()
     }
     render(){
         return(
@@ -122,8 +123,11 @@ class ProfilePage extends React.Component {
 
     loadCollections = (updateSelected) => {
         fetch(collectionsRoute).then(res => res.json()).then(res =>{
-            if(updateSelected)this.setState({collections: res,selectedCollection:res[0]})
-            else this.setState({collections: res})
+            if(res.length == 0)this.setState({collections:res,selectedCollection:{}})
+            else{
+                if(updateSelected)this.setState({collections: res,selectedCollection:res[0]})
+                else this.setState({collections: res})
+            }
         })
     }
 
