@@ -114,7 +114,7 @@ class RecordsDisplay extends React.Component {
         fetch(recordsRoute).then(res => res.json()).then(records => {
             this.setState({records});
             if(setStart){
-                if(!recordInStorage===null){
+                if(!recordInStorage){
                     this.getSong(records[0])
                 }else{
                     this.getSong(records.filter(record => record.id == JSON.parse(recordInStorage).id)[0])

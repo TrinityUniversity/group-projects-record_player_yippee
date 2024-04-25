@@ -14,7 +14,7 @@ class HomeModel(db: Database)(implicit ec: ExecutionContext){
             Future.sequence(result.map{recordRow =>
                 db.run((for{
                     collectionItem <- CollectionItems if collectionItem.recordId === recordRow._1.recordId
-                    collection <- Collections if collection.collectionId === collectionItem.collectionId
+                    collection <- Collections if collection.collectionId === collectionItem.collectionId && collection.userId === id
                 } yield (collection)).result).map{collections =>
                         RecordDeliveryData(recordRow._1.recordId,recordRow._1.name,recordRow._1.length,recordRow._1.fileLocation,recordRow._2.username,recordRow._1.artist,collections.map(coll => CollectionData(coll.collectionId,coll.name)))
                 }
@@ -22,12 +22,12 @@ class HomeModel(db: Database)(implicit ec: ExecutionContext){
         }
     }
 
-    def fetchSong(id:Int) : Future[RecordDeliveryData] = {
+    def fetchSong(id:Int,userId:Int) : Future[RecordDeliveryData] = {
         db.run(Records.filter(recordRow => recordRow.recordId === id).result).flatMap{result =>
             db.run(Users.filter(userRow => userRow.id === result(0).creatorId).result).flatMap{ user => 
                 db.run((for{
                     collectionItem <- CollectionItems if collectionItem.recordId === result(0).recordId
-                    collection <- Collections if collection.collectionId === collectionItem.collectionId
+                    collection <- Collections if collection.collectionId === collectionItem.collectionId && collection.userId === userId
                 } yield (collection)).result).map{collections =>
                         RecordDeliveryData(result(0).recordId,result(0).name,result(0).length,result(0).fileLocation,user(0).username,result(0).artist,collections.map(coll => CollectionData(coll.collectionId,coll.name)))
                 }

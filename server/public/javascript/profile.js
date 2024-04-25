@@ -91,7 +91,7 @@ class ProfilePage extends React.Component {
         return ce('div',null,
             ce(Header,null,
                 ce('h2',{className:"current-song"},this.state.selectedCollection?.name),
-                ce('button',{onClick: () => window.location.href = '/logout'},'Logout')
+                ce('button',{onClick: () => this.logout()},'Logout')
             ),
             ce(SideBar,null,
                 ce('div',{className: "profile-card"},
@@ -115,6 +115,11 @@ class ProfilePage extends React.Component {
             ),
             ce(CollectionDisplay,{collectionId:this.state.selectedCollection?.id,fixScreen:()=>{this.getUserData();this.loadCollections(false)}},null)
         )
+    }
+
+    logout = () => {
+        window.localStorage.removeItem('current-record')
+        window.location.href = '/logout'
     }
 
     getUserData = () => {
