@@ -43,17 +43,29 @@ class Login extends React.Component {
         this.setState({loginPass: e.target.value})
     }
 
-    login = (e) => {
-        fetch(loginRoute,{
-            method: "POST",
-            headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
-            body: JSON.stringify({username: this.state.loginName, password: this.state.loginPass})
-            }
-        ).then(res => res.json()).then(valid => {
-            if(valid){
-                window.location.href = '/'
-            }
-        })
+    login = () => {
+        const alerts = []
+        let dropLogin = false
+        if(this.state.loginName == "" || this.state.loginPass == ""){
+            alerts.push("Username and Password must not be blank")
+            dropLogin = true
+        }
+        if(!dropLogin){
+            fetch(loginRoute,{
+                method: "POST",
+                headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
+                body: JSON.stringify({username: this.state.loginName, password: this.state.loginPass})
+                }
+            ).then(res => res.json()).then(valid => {
+                if(valid){
+                    window.location.href = '/'
+                }else{
+                    alerts.push("Invalid Username or Password")
+                    this.props.alertUpdate(alerts)
+                }
+            })
+        }
+        this.props.alertUpdate(alerts)
     }
 
 }
@@ -94,7 +106,29 @@ class SignUp extends React.Component {
     }
 
     signUp = (e) => {
-        if(this.state.signUpPass === this.state.signUpPassVer){
+        const alerts = []
+        let dropSignUp = false
+        if(this.state.signUpName == "" || this.state.signUpPass == "" || this.state.signUpPassVer == ""){
+            alerts.push("Username and Passwords must not be blank")
+            dropSignUp = true
+        }
+        if(this.state.signUpName.match(/^[a-zA-Z0-9!$_\-]+$/) == null){
+            alerts.push("Username can only contain letters, numbers, and the following symbols: -,_,!,$")
+            dropSignUp = true
+        }
+        if(this.state.signUpPass.match(/^[a-zA-Z0-9!@#$%^&*]/) == null){
+            alerts.push("Password can only contain letters, numbers, and symbols,*")
+            dropSignUp = true
+        }
+        if(this.state.signUpPassVer.match(/^[a-zA-Z0-9!@#$%^&*]/) == null){
+            alerts.push("Password Verification can only contain letters, numbers, and symbols")
+            dropSignUp = true
+        }
+        if(this.state.signUpPass !== this.state.signUpPassVer){
+            alerts.push("Passwords must match")
+            dropSignUp = true
+        }
+        if(!dropSignUp){
             fetch(signUpRoute,{
                 method: "POST",
                 headers: {'Content-Type':'application/json','Csrf-Token': csrfToken},
@@ -102,32 +136,39 @@ class SignUp extends React.Component {
                 }
             ).then(res => res.json())
             .then(valid => {
-                    if(valid){
-                        window.location.href = '/'
-                    }
-                })
+                if(valid){
+                    window.location.href = '/'
+                }else{
+                    alerts.push("Username already exists")
+                    this.props.alertUpdate(alerts)
+                }
+            })
         }
+        this.props.alertUpdate(alerts)
     }
 }
 
 class LoginPage extends React.Component {
     constructor(props){
         super(props),
-        this.state = {signUp: false}
+        this.state = {signUp: false,alerts: []}
     }
     render(){
         return ce('div', null,
             ce(Header,null,
                 this.state.signUp?
-                ce('button',{onClick: () => this.setState({signUp: false})},"Sign In")
+                ce('button',{onClick: () => this.setState({signUp: false, alerts:[]})},"Sign In")
                 :
-                ce('button',{onClick: () => this.setState({signUp: true})},"Sign Up")
+                ce('button',{onClick: () => this.setState({signUp: true,alerts:[]})},"Sign Up")
             ),
             ce('div',{className:"login-page-container"},
                 this.state.signUp?
-                ce(SignUp)
+                ce(SignUp, {alertUpdate: (alerts) => this.setState({alerts})})
                 :
-                ce(Login)
+                ce(Login, {alertUpdate: (alerts) => this.setState({alerts})}),
+                ce('div',{className:'alerts'},
+                    this.state.alerts.map(a => ce('p',{id:'alerts'},a))
+                )
             )
         )
     }

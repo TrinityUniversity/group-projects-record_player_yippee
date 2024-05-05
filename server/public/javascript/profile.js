@@ -130,6 +130,12 @@ class ProfilePage extends React.Component {
         fetch(collectionsRoute).then(res => res.json()).then(res =>{
             if(res.length == 0)this.setState({collections:res,selectedCollection:{}})
             else{
+                const likedIndex = res.findIndex(col => col.name == "Liked")
+                if(likedIndex !== -1){
+                    const temp = res[0]
+                    res[0] = res[likedIndex]
+                    res[likedIndex] = temp
+                }
                 if(updateSelected)this.setState({collections: res,selectedCollection:res[0]})
                 else this.setState({collections: res})
             }
