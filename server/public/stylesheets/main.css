@@ -61,8 +61,7 @@ body{
 }
 
 .login-page-container{
-    display: flex;
-    justify-content: center;
+    display: block;
 }
 
 .login-page {
@@ -71,8 +70,24 @@ body{
     width: 40%;
     border-radius: 10px;
     border: solid var(--secondary-color);
+    margin: 0 auto;
     margin-top: 20px;
     padding-bottom: 20px;
+}
+
+.alerts {
+    margin: 0 auto;
+    margin-top: 5px;
+    width: 40%;
+    text-align: center;
+    color: black;
+    background-color: var(--header-color);
+    border: solid var(--header-button-color);
+    border-radius: 5px;
+}
+
+.alerts:empty{
+    display: none;
 }
 
 .login-page button {
