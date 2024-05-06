@@ -112,15 +112,15 @@ class SignUp extends React.Component {
             alerts.push("Username and Passwords must not be blank")
             dropSignUp = true
         }
-        if(this.state.signUpName.match(/^[a-zA-Z0-9!$_\-]+$/) == null){
+        if(this.state.signUpName != "" && this.state.signUpName.match(/^[a-zA-Z0-9!$_\-]+$/) == null){
             alerts.push("Username can only contain letters, numbers, and the following symbols: -,_,!,$")
             dropSignUp = true
         }
-        if(this.state.signUpPass.match(/^[a-zA-Z0-9!@#$%^&*]/) == null){
-            alerts.push("Password can only contain letters, numbers, and symbols,*")
+        if(this.state.signUpPass != "" && this.state.signUpPass.match(/^[a-zA-Z0-9!@#$%^&*]/) == null){
+            alerts.push("Password can only contain letters, numbers, and symbols")
             dropSignUp = true
         }
-        if(this.state.signUpPassVer.match(/^[a-zA-Z0-9!@#$%^&*]/) == null){
+        if(this.state.signUpPassVer != "" & this.state.signUpPassVer.match(/^[a-zA-Z0-9!@#$%^&*]/) == null){
             alerts.push("Password Verification can only contain letters, numbers, and symbols")
             dropSignUp = true
         }
