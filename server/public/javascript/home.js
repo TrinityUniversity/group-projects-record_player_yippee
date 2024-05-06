@@ -168,12 +168,16 @@ class RecordPlayer extends React.Component {
     componentDidUpdate = (prevProps) =>{
         if(prevProps.recordUrl != this.props.recordUrl){
             this.stopRecord()
+            document.getElementById("record-image")?.focus()
         }
+    }
+    componentDidMount = () => {
+        document.getElementById("record-image")?.focus()
     }
     render() {
         return (
             ce('div',{className: "record"},
-                ce('img',{id:"record-image",className:"spin-animation",onClick: ()=>this.handlePlayPause(),src:vinylSVG}),
+                ce('img',{id:"record-image",className:"spin-animation",tabIndex:0,onClick: ()=>this.handlePlayPause(),onKeyPress: (e) => {if(e.key === " ")this.handlePlayPause()},src:vinylSVG}),
                 ce('audio',{id:"record",src: this.props.recordUrl, onEnded: ()=>this.stopRecord()},null),
             )
         )

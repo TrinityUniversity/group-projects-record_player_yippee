@@ -345,3 +345,7 @@ aside {
 .plus-button:hover{
     cursor: pointer;
 }
+
+#record-image:focus{
+    outline: none;
+}
